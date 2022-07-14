@@ -13,8 +13,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DataSourceModule {
+object DataSourceModule {
     @Provides
     @Singleton
-    fun provideLocalDataSource(dutchDAO: HomeLocalDutchDAO) = LocalDataSourceImpl(dutchDAO)
+    fun provideLocalDataSource(dutchDAO: HomeLocalDutchDAO): LocalDataSource {
+        return LocalDataSourceImpl(dutchDAO)
+    }
 }

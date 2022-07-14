@@ -2,9 +2,9 @@ package com.camu.collection.data.module
 
 import android.content.Context
 import androidx.room.Room
+import com.camu.collection.data.define.DataDefine
 import com.camu.collection.data.local.db.HomeLocalDutchDAO
 import com.camu.collection.data.local.db.HomeRoomDataBase
-import com.camu.collection.data.define.DutchDefine
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DataBaseModule {
+object DataBaseModule {
     @Singleton
     @Provides
     fun provideDutchDatabase(@ApplicationContext context: Context) : HomeRoomDataBase {
@@ -22,7 +22,7 @@ abstract class DataBaseModule {
             .databaseBuilder(
                 context,
                 HomeRoomDataBase::class.java,
-                DutchDefine.DutchDataBase.DATABASE_NAME)
+                DataDefine.DutchDataBase.DATABASE_NAME)
             .build()
     }
 
