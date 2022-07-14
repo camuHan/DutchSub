@@ -1,8 +1,9 @@
-package com.camu.collection.data.db
+package com.camu.collection.data.local.db
 
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.camu.collection.data.model.DutchInfoDbEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HomeLocalDutchDAO {
@@ -10,7 +11,7 @@ interface HomeLocalDutchDAO {
     fun insert(file: DutchInfoDbEntity)
 
     @Query("SELECT * FROM DutchInfo")
-    fun getAll(): List<DutchInfoDbEntity>
+    fun getAll(): Flow<List<DutchInfoDbEntity>>
 
     @Query("SELECT * FROM DutchInfo WHERE dutchId = :dutchId")
     fun getItem(dutchId: String): DutchInfoDbEntity

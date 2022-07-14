@@ -1,4 +1,4 @@
-package com.camu.collection.data.db
+package com.camu.collection.data.local.db
 
 import android.content.Context
 import androidx.room.Database

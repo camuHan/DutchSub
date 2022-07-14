@@ -5,6 +5,9 @@ import androidx.room.Room
 import com.camu.collection.data.local.db.HomeLocalDutchDAO
 import com.camu.collection.data.local.db.HomeRoomDataBase
 import com.camu.collection.data.define.DutchDefine
+import com.camu.collection.data.local.LocalDataSource
+import com.camu.collection.data.repository.DutchRepositoryImpl
+import com.camu.collection.domain.repository.DutchRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,21 +17,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DataBaseModule {
+abstract class RepositoryModule {
     @Singleton
     @Provides
-    fun provideDutchDatabase(@ApplicationContext context: Context) : HomeRoomDataBase {
-        return Room
-            .databaseBuilder(
-                context,
-                HomeRoomDataBase::class.java,
-                DutchDefine.DutchDataBase.DATABASE_NAME)
-            .build()
-    }
-
-    @Singleton
-    @Provides
-    fun provideDutchDAO(dutchDB: HomeRoomDataBase): HomeLocalDutchDAO {
-        return dutchDB.homeDutchDAO()
+    fun provideRepository(localDataSource: LocalDataSource): DutchRepository {
+        return DutchRepositoryImpl(localDataSource)
     }
 }
