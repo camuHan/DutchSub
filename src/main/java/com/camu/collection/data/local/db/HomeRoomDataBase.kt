@@ -6,9 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.camu.collection.data.model.DutchInfoDbEntity
+import com.camu.collection.data.model.SubDutchInfoDbEntity
 import com.camu.collection.data.utils.HomeTypeConverter
 
-@Database(entities = [DutchInfoDbEntity::class], version = 1, exportSchema = false)
+@Database(entities = [DutchInfoDbEntity::class, SubDutchInfoDbEntity::class], version = 1, exportSchema = false)
 @TypeConverters(HomeTypeConverter::class)
 abstract class HomeRoomDataBase : RoomDatabase() {
     abstract fun homeDutchDAO(): HomeLocalDutchDAO
