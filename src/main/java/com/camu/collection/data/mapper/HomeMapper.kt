@@ -14,7 +14,7 @@ fun mapperToDutchInfo(dutchInfoEntity: DutchInfoDbEntity): DutchInfo {
     return DutchInfo(
         userId = dutchInfoEntity.userId,
         dutchId = dutchInfoEntity.dutchId,
-        name = dutchInfoEntity.name,
+        userName = dutchInfoEntity.name,
         title = dutchInfoEntity.title,
         contents = dutchInfoEntity.contents,
         contentsList = dutchInfoEntity.contentsList as ArrayList<String>,
@@ -40,7 +40,7 @@ fun mapperToDutchEntity(dutchInfo: DutchInfo): DutchInfoDbEntity {
     return DutchInfoDbEntity(
         userId = dutchInfo.userId,
         dutchId = dutchInfo.dutchId,
-        name = dutchInfo.name,
+        name = dutchInfo.userName,
         title = dutchInfo.title,
         contents = dutchInfo.contents,
         contentsList = dutchInfo.contentsList,
