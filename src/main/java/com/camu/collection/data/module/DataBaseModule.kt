@@ -5,6 +5,8 @@ import androidx.room.Room
 import com.camu.collection.data.define.DataDefine
 import com.camu.collection.data.local.db.HomeLocalDutchDAO
 import com.camu.collection.data.local.db.HomeRoomDataBase
+import com.camu.collection.data.utils.HomeTypeConverter
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +25,8 @@ object DataBaseModule {
                 context,
                 HomeRoomDataBase::class.java,
                 DataDefine.DutchDataBase.DATABASE_NAME)
+            .addTypeConverter(HomeTypeConverter(provideGson()))
+            .fallbackToDestructiveMigration()
             .build()
     }
 
@@ -30,5 +34,11 @@ object DataBaseModule {
     @Provides
     fun provideDutchDAO(dutchDB: HomeRoomDataBase): HomeLocalDutchDAO {
         return dutchDB.homeDutchDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideGson(): Gson {
+        return Gson()
     }
 }

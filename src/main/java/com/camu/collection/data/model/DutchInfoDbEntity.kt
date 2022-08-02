@@ -2,6 +2,8 @@ package com.camu.collection.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.camu.collection.domain.model.DutchMemberInfo
+import com.camu.collection.domain.model.SubDutchInfo
 import java.io.Serializable
 
 @Entity(tableName = "DutchInfo")
@@ -10,8 +12,10 @@ data class DutchInfoDbEntity(
     var id: Long? = null,
     var userId: String = "",
     var dutchId: String = "",
-    var name: String = "",
+    var userName: String = "",
     var title: String = "",
+    var dutchMembers: List<DutchMemberInfo> = ArrayList(),
+    var subDutchInfos: List<SubDutchInfo> = ArrayList(),
     var contents: String = "",
     var contentsList: List<String> = ArrayList(),
     var location: String = "",

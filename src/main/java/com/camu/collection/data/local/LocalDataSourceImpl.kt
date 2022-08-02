@@ -13,22 +13,22 @@ class LocalDataSourceImpl @Inject constructor(
     }
 
     override fun getData(dutchId: String): DutchInfoDbEntity {
-        return dutchDAO.getItem(dutchId)
+        return DutchInfoDbEntity()//dutchDAO.getItem(dutchId)
     }
 
-    override fun setData(dutchInfo: DutchInfoDbEntity) {
+    override suspend fun setData(dutchInfo: DutchInfoDbEntity) {
         dutchDAO.insert(dutchInfo)
     }
 
     override fun deleteData(dutchId: String) {
-        dutchDAO.delete(dutchId)
+//        dutchDAO.delete(dutchId)
     }
 
     override fun deleteData(dutchInfo: DutchInfoDbEntity) {
-        dutchDAO.delete(dutchInfo)
+//        dutchDAO.delete(dutchInfo)
     }
 
     override fun updateData(dutchInfo: DutchInfoDbEntity) {
-        dutchDAO.update(dutchInfo)
+//        dutchDAO.update(dutchInfo)
     }
 }
