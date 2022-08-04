@@ -36,6 +36,7 @@ fun mapperToDutchInfo(dutchInfoEntity: DutchInfoDbEntity): DutchInfo {
             ArrayList()
         },
         location = dutchInfoEntity.location,
+        partyTime = dutchInfoEntity.partyTime,
         createdTime = dutchInfoEntity.createdTime,
         modifiedTime = dutchInfoEntity.modifiedTime,
         photoUrl = dutchInfoEntity.photoUrl,
@@ -64,6 +65,7 @@ fun mapperToDutchEntity(dutchInfo: DutchInfo): DutchInfoDbEntity {
         contents = dutchInfo.contents,
         contentsList = dutchInfo.contentsList,
         location = dutchInfo.location,
+        partyTime = dutchInfo.partyTime,
         createdTime = dutchInfo.createdTime,
         modifiedTime = dutchInfo.modifiedTime,
         photoUrl = dutchInfo.photoUrl,

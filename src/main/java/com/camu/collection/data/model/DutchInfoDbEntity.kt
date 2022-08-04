@@ -19,6 +19,7 @@ data class DutchInfoDbEntity(
     var contents: String = "",
     var contentsList: List<String> = ArrayList(),
     var location: String = "",
+    var partyTime: String = "",
     var createdTime: String = "",
     var modifiedTime: String = "",
     var photoUrl: String = "",

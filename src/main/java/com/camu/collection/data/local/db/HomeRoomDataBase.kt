@@ -9,7 +9,7 @@ import com.camu.collection.data.model.DutchInfoDbEntity
 import com.camu.collection.data.model.SubDutchInfoDbEntity
 import com.camu.collection.data.utils.HomeTypeConverter
 
-@Database(entities = [DutchInfoDbEntity::class], version = 2, exportSchema = false)
+@Database(entities = [DutchInfoDbEntity::class], version = 3, exportSchema = false)
 @TypeConverters(HomeTypeConverter::class)
 abstract class HomeRoomDataBase : RoomDatabase() {
     abstract fun homeDutchDAO(): HomeLocalDutchDAO
