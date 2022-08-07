@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface HomeLocalDutchDAO {
     @Insert(onConflict = REPLACE)
-    suspend fun insert(file: DutchInfoDbEntity)
+    suspend fun insert(dutchInfo: DutchInfoDbEntity)
 
     @Query("SELECT * FROM DutchInfo")
     fun getAll(): Flow<List<DutchInfoDbEntity>>
@@ -27,10 +27,10 @@ interface HomeLocalDutchDAO {
     suspend fun deleteFolder(dutchId: String)
 
     @Update
-    suspend fun update(file: DutchInfoDbEntity)
+    suspend fun update(dutchInfo: DutchInfoDbEntity)
 
     @Delete
-    suspend fun delete(file: DutchInfoDbEntity)
+    suspend fun delete(dutchInfo: DutchInfoDbEntity)
 
     @Query("SELECT * FROM DutchInfo WHERE title LIKE '%' || :keyword || '%'")
     suspend fun searchItems(keyword: String): List<DutchInfoDbEntity>

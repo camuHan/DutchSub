@@ -24,8 +24,8 @@ class LocalDataSourceImpl @Inject constructor(
 //        dutchDAO.delete(dutchId)
     }
 
-    override fun deleteData(dutchInfo: DutchInfoDbEntity) {
-//        dutchDAO.delete(dutchInfo)
+    override suspend fun deleteData(dutchInfo: DutchInfoDbEntity) {
+        dutchDAO.delete(dutchInfo)
     }
 
     override fun updateData(dutchInfo: DutchInfoDbEntity) {

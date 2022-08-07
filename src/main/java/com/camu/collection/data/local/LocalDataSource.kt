@@ -8,6 +8,6 @@ interface LocalDataSource {
     fun getData(dutchId: String): DutchInfoDbEntity
     suspend fun setData(dutchInfo: DutchInfoDbEntity)
     fun deleteData(dutchId: String)
-    fun deleteData(dutchInfo: DutchInfoDbEntity)
+    suspend fun deleteData(dutchInfo: DutchInfoDbEntity)
     fun updateData(dutchInfo: DutchInfoDbEntity)
 }

@@ -15,7 +15,7 @@ fun mapperToDutchInfoList(dutchInfoEntityList: List<DutchInfoDbEntity>): List<Du
 
 fun mapperToDutchInfo(dutchInfoEntity: DutchInfoDbEntity): DutchInfo {
     return DutchInfo(
-        id = dutchInfoEntity.id.toString(),
+        id = dutchInfoEntity.id,
         userId = dutchInfoEntity.userId,
         dutchId =  dutchInfoEntity.dutchId,
         userName = dutchInfoEntity.userName,
@@ -57,6 +57,7 @@ fun mapperToDutchEntityList(dutchInfoList: List<DutchInfo>): List<DutchInfoDbEnt
 
 fun mapperToDutchEntity(dutchInfo: DutchInfo): DutchInfoDbEntity {
     return DutchInfoDbEntity(
+        id = dutchInfo.id,
         userId = dutchInfo.userId,
         dutchId =  dutchInfo.dutchId,
         userName = dutchInfo.userName,
@@ -89,10 +90,15 @@ fun mapperToSubDutchMemberInfo(dutchMemberInfo: DutchMemberInfo): SubDutchMember
     return subDutchMemberInfo
 }
 
-fun mapperToSubDutchMemberInfoList(dutchMemberInfoList: List<DutchMemberInfo>): List<SubDutchMemberInfo> {
-    return dutchMemberInfoList.toList().map { dutchMemberInfo ->
-        mapperToSubDutchMemberInfo(dutchMemberInfo)
+fun mapperToSubDutchMemberInfoList(dutchMemberInfoList: List<DutchMemberInfo>, roundOrder: Int): List<SubDutchMemberInfo> {
+    val subDutchMemberList = ArrayList<SubDutchMemberInfo>()
+    dutchMemberInfoList.forEach {  dutchMemberInfo ->
+        val subDutchMemberInfo = mapperToSubDutchMemberInfo(dutchMemberInfo)
+        subDutchMemberInfo.subMemberCount = dutchMemberInfoList.size
+        subDutchMemberInfo.roundOrder = roundOrder
+        subDutchMemberList.add(subDutchMemberInfo)
     }
+    return subDutchMemberList
 }
 
 fun mapperConvertSubDutchMemberList(
@@ -101,7 +107,6 @@ fun mapperConvertSubDutchMemberList(
     dutchMembers.forEach { mainMember ->
         subDutchMembers.forEach { subMember ->
             if(mainMember.memberName == subMember.memberName) {
-                mainMember.coast = subMember.subCoast
                 mainMember.subDutchMemberInfo.add(subMember)
             }
         }
