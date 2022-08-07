@@ -2,8 +2,7 @@ package com.camu.collection.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.camu.collection.domain.model.DutchMemberInfo
-import java.io.Serializable
+import com.camu.collection.domain.model.SubDutchMemberInfo
 
 @Entity(tableName = "SubDutchInfo")
 data class SubDutchInfoDbEntity(
@@ -16,7 +15,7 @@ data class SubDutchInfoDbEntity(
     var subTitle: String = "",
     var coast: String = "",
     var payer: String = "",
-    var subDutchMembers: List<DutchMemberInfo> = ArrayList(),
+    var subDutchMembers: List<SubDutchMemberInfo> = ArrayList(),
     var receipt: String = "",
     var receiptList: List<String> = ArrayList(),
     var location: String = ""

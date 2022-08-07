@@ -4,6 +4,7 @@ import com.camu.collection.data.model.DutchInfoDbEntity
 import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.DutchMemberInfo
 import com.camu.collection.domain.model.SubDutchInfo
+import com.camu.collection.domain.model.SubDutchMemberInfo
 
 
 fun mapperToDutchInfoList(dutchInfoEntityList: List<DutchInfoDbEntity>): List<DutchInfo> {
@@ -75,4 +76,35 @@ fun mapperToDutchEntity(dutchInfo: DutchInfo): DutchInfoDbEntity {
         password = dutchInfo.password,
         locked = dutchInfo.locked
     )
+}
+
+fun mapperToDutchMemberInfo(subDutchMemberInfo: SubDutchMemberInfo): DutchMemberInfo {
+    return DutchMemberInfo()
+}
+
+fun mapperToSubDutchMemberInfo(dutchMemberInfo: DutchMemberInfo): SubDutchMemberInfo {
+    val subDutchMemberInfo = SubDutchMemberInfo()
+    subDutchMemberInfo.photoUrl = dutchMemberInfo.photoUrl
+    subDutchMemberInfo.memberName = dutchMemberInfo.memberName
+    return subDutchMemberInfo
+}
+
+fun mapperToSubDutchMemberInfoList(dutchMemberInfoList: List<DutchMemberInfo>): List<SubDutchMemberInfo> {
+    return dutchMemberInfoList.toList().map { dutchMemberInfo ->
+        mapperToSubDutchMemberInfo(dutchMemberInfo)
+    }
+}
+
+fun mapperConvertSubDutchMemberList(
+    dutchMembers: ArrayList<DutchMemberInfo>, subDutchMembers: ArrayList<SubDutchMemberInfo>
+): ArrayList<DutchMemberInfo> {
+    dutchMembers.forEach { mainMember ->
+        subDutchMembers.forEach { subMember ->
+            if(mainMember.memberName == subMember.memberName) {
+                mainMember.coast = subMember.subCoast
+                mainMember.subDutchMemberInfo.add(subMember)
+            }
+        }
+    }
+    return dutchMembers
 }
