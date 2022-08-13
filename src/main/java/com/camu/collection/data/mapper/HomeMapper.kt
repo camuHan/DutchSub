@@ -101,7 +101,7 @@ fun mapperToSubDutchMemberInfoList(dutchMemberInfoList: List<DutchMemberInfo>, r
     return subDutchMemberList
 }
 
-fun mapperConvertSubDutchMemberList(
+fun mapperAddSubDutchMemberList(
     dutchMembers: ArrayList<DutchMemberInfo>, subDutchMembers: ArrayList<SubDutchMemberInfo>
 ): ArrayList<DutchMemberInfo> {
     dutchMembers.forEach { mainMember ->
@@ -109,6 +109,27 @@ fun mapperConvertSubDutchMemberList(
             if(mainMember.memberName == subMember.memberName) {
                 mainMember.subDutchMemberInfo.add(subMember)
             }
+        }
+    }
+    return dutchMembers
+}
+
+fun mapperDeleteSubDutchMemberList(
+    dutchMembers: ArrayList<DutchMemberInfo>
+    , subDutchMembers: ArrayList<SubDutchMemberInfo>
+    , position: Int
+): ArrayList<DutchMemberInfo> {
+    dutchMembers.forEach { mainMember ->
+        subDutchMembers.forEach { subMember ->
+            if(mainMember.memberName == subMember.memberName) {
+                mainMember.subDutchMemberInfo.removeAt(position)
+            }
+        }
+    }
+
+    dutchMembers.forEach { dutchMemberInfo ->
+        dutchMemberInfo.subDutchMemberInfo.forEachIndexed { index, subDutchMemberInfo ->
+            subDutchMemberInfo.roundOrder = index+1
         }
     }
     return dutchMembers
