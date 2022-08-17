@@ -1,10 +1,8 @@
 package com.camu.collection.data.mapper
 
 import com.camu.collection.data.model.DutchInfoDbEntity
-import com.camu.collection.domain.model.DutchInfo
-import com.camu.collection.domain.model.DutchMemberInfo
-import com.camu.collection.domain.model.SubDutchInfo
-import com.camu.collection.domain.model.SubDutchMemberInfo
+import com.camu.collection.domain.model.*
+import com.google.firebase.auth.FirebaseUser
 
 
 fun mapperToDutchInfoList(dutchInfoEntityList: List<DutchInfoDbEntity>): List<DutchInfo> {
@@ -133,4 +131,14 @@ fun mapperDeleteSubDutchMemberList(
         }
     }
     return dutchMembers
+}
+
+fun mapperToUserInfoModel(firebaseUser: FirebaseUser?): UserInfoModel {
+    val userInfoModel = UserInfoModel()
+    userInfoModel.userId = firebaseUser?.uid
+    userInfoModel.name = firebaseUser?.displayName
+    userInfoModel.email = firebaseUser?.email
+    userInfoModel.phoneNumber = firebaseUser?.phoneNumber
+    userInfoModel.photoUrl = firebaseUser?.photoUrl.toString()
+    return userInfoModel
 }

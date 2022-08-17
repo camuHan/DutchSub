@@ -2,16 +2,22 @@ package com.camu.collection.data.remote.firebase
 
 import android.net.Uri
 import com.camu.collection.data.utils.CMLog
+import com.camu.collection.domain.model.UserInfoModel
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storageMetadata
 import kotlinx.coroutines.tasks.await
 
 class DutchFireStorage {
+    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val storageRef = FirebaseStorage.getInstance().reference
 
-    suspend fun uploadImage(storageName: String, uri: String): String? {
+    suspend fun uploadImage(storageName: String, uri: String?): String? {
         if (uri == "") {
             return null
         }
@@ -72,6 +78,24 @@ class DutchFireStorage {
             }.await()
         }
         return resultList
+    }
+
+    suspend fun updateProfile(userInfo: UserInfoModel): Boolean {
+        var result = false
+        val user = Firebase.auth.currentUser
+        val profileUpdates = userProfileChangeRequest {
+            displayName = userInfo.name
+            photoUri = Uri.parse(userInfo.photoUrl)
+        }
+
+        user!!.updateProfile(profileUpdates)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    CMLog.d(TAG, "User profile updated.")
+                    result = true
+                }
+            }.await()
+        return result
     }
 
     companion object {
