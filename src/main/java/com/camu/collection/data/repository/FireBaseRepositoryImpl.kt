@@ -2,9 +2,9 @@ package com.camu.collection.data.repository
 
 import android.net.Uri
 import com.camu.collection.data.remote.RemoteDataSource
+import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
 import com.camu.collection.domain.repository.FireBaseRepository
-import com.google.firebase.auth.UserInfo
 import javax.inject.Inject
 
 class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: RemoteDataSource) : FireBaseRepository {
@@ -18,5 +18,17 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
 
     override suspend fun changeProfileImage(uri: Uri): String? {
         return remoteDataSource.uploadProfileImage(uri.toString())
+    }
+
+    /* dutch other */
+
+    override suspend fun getDutchOtherList() : List<DutchInfo>? {
+        return remoteDataSource.getDutchOtherList()/*.map { value ->
+            mapperToDutchInfoList(value) }*/
+//        return mapperToDutchInfoList(localDataSource.getList())
+    }
+
+    override suspend fun setDutchOther(dutchInfo: DutchInfo) {
+        remoteDataSource.setDutchOther(dutchInfo)
     }
 }

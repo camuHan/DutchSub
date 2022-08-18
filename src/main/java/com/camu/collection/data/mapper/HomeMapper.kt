@@ -3,6 +3,7 @@ package com.camu.collection.data.mapper
 import com.camu.collection.data.model.DutchInfoDbEntity
 import com.camu.collection.domain.model.*
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentSnapshot
 
 
 fun mapperToDutchInfoList(dutchInfoEntityList: List<DutchInfoDbEntity>): List<DutchInfo> {
@@ -141,4 +142,59 @@ fun mapperToUserInfoModel(firebaseUser: FirebaseUser?): UserInfoModel {
     userInfoModel.phoneNumber = firebaseUser?.phoneNumber
     userInfoModel.photoUrl = firebaseUser?.photoUrl.toString()
     return userInfoModel
+}
+
+/* firestore */
+fun mapperFireBaseToDutchInfoList(documentList: List<DocumentSnapshot>?): List<DutchInfo> {
+    val dutchInfoList = ArrayList<DutchInfo>()
+    documentList?.forEach { documentSnapshot ->
+        val item = mapperFireBaseToDutchInfo(documentSnapshot)
+        dutchInfoList.add(item)
+    }
+    return dutchInfoList
+}
+
+fun mapperFireBaseToDutchInfo(documentSnapshot: DocumentSnapshot?): DutchInfo {
+    val item = DutchInfo()
+    if(documentSnapshot == null) {
+        return item
+    }
+
+    with(documentSnapshot) {
+        item.id = id.toLong()
+        item.userId = data?.get("userId").toString()
+        item.dutchId =  data?.get("dutchId").toString()
+        item.userName = data?.get("userName").toString()
+        item.title = data?.get("title").toString()
+        val dutchMemberList = documentSnapshot.data?.get("dutchMembers")
+        if(dutchMemberList is ArrayList<*>) {
+            dutchMemberList.forEach {
+                item.dutchMembers.add(it as DutchMemberInfo)
+            }
+        }
+        val subDutchInfoList = documentSnapshot.data?.get("subDutchInfos")
+        if(subDutchInfoList is ArrayList<*>) {
+            subDutchInfoList.forEach {
+                item.subDutchInfos.add(it as SubDutchInfo)
+            }
+        }
+        item.contents = data?.get("contents").toString()
+        val contentsList = documentSnapshot.data?.get("contentsList")
+        if(contentsList is ArrayList<*>) {
+            contentsList.forEach {
+                item.contentsList.add(it.toString())
+            }
+        }
+        item.location = data?.get("location").toString()
+        item.partyTime = data?.get("partyTime").toString()
+        item.createdTime = data?.get("createdTime").toString()
+        item.modifiedTime = data?.get("modifiedTime").toString()
+        item.photoUrl = data?.get("photoUrl").toString()
+        item.likeCount = data?.get("likeCount") as Int
+        item.commentCount = data?.get("commentCount") as Int
+        item.viewCount = data?.get("viewCount") as Int
+        item.password = data?.get("password").toString()
+        item.locked = data?.get("locked") as Boolean
+    }
+    return item
 }
