@@ -3,6 +3,7 @@ package com.camu.collection.data.remote
 import com.camu.collection.data.define.DataDefine.FireBaseStorage.FIREBASE_STORAGE_PROFILE_IMAGES
 import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_DUTCHS
 import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_USERS
+import com.camu.collection.data.mapper.mapperAddFirebaseUser
 import com.camu.collection.data.mapper.mapperFireBaseToDutchInfoList
 import com.camu.collection.data.remote.firebase.DutchFireStorage
 import com.camu.collection.data.remote.firebase.DutchFireStore
@@ -23,10 +24,9 @@ class RemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun uploadProfileImage(uri: String?): String? {
-        val uri = fireStorage.uploadImage(
+        return fireStorage.uploadImage(
             FIREBASE_STORAGE_PROFILE_IMAGES + "/" + mAuth.currentUser?.uid
             , uri)
-        return uri
     }
 
     suspend override fun updateProfileData(userInfoModel: UserInfoModel): Boolean {
@@ -40,6 +40,10 @@ class RemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun setDutchOther(dutchInfo: DutchInfo) {
+        dutchInfo.createdTime = System.currentTimeMillis().toString()
+        dutchInfo.modifiedTime = dutchInfo.createdTime
+        mapperAddFirebaseUser(dutchInfo, mAuth.currentUser)
+        dutchInfo.dutchId = dutchInfo.userId + dutchInfo.modifiedTime
         fireStore.setData(COLLECTION_NAME_DUTCHS, dutchInfo)
     }
 }

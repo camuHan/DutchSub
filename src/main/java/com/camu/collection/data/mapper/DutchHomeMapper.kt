@@ -161,7 +161,7 @@ fun mapperFireBaseToDutchInfo(documentSnapshot: DocumentSnapshot?): DutchInfo {
     }
 
     with(documentSnapshot) {
-        item.id = id.toLong()
+//        item.id = data?.get("id") as Long
         item.userId = data?.get("userId").toString()
         item.dutchId =  data?.get("dutchId").toString()
         item.userName = data?.get("userName").toString()
@@ -197,4 +197,13 @@ fun mapperFireBaseToDutchInfo(documentSnapshot: DocumentSnapshot?): DutchInfo {
         item.locked = data?.get("locked") as Boolean
     }
     return item
+}
+
+fun mapperAddFirebaseUser(dutchInfo: DutchInfo, firebaseUser: FirebaseUser?): DutchInfo {
+    if(firebaseUser != null) {
+        dutchInfo.userId = firebaseUser.uid
+        dutchInfo.userName = firebaseUser.displayName ?: ""
+        dutchInfo.photoUrl = firebaseUser.photoUrl.toString()
+    }
+    return dutchInfo
 }
