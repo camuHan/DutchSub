@@ -2,6 +2,7 @@ package com.camu.collection.data.repository
 
 import android.net.Uri
 import com.camu.collection.data.remote.RemoteDataSource
+import com.camu.collection.domain.model.CommentInfo
 import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
 import com.camu.collection.domain.repository.FireBaseRepository
@@ -30,5 +31,17 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
 
     override suspend fun setDutchOther(dutchInfo: DutchInfo) {
         remoteDataSource.setDutchOther(dutchInfo)
+    }
+
+    override suspend fun deleteDutchOther(dutchId: String): Boolean {
+        return remoteDataSource.deleteDutchOther(dutchId)
+    }
+
+    override suspend fun getDutchCommentList(dutchId: String): List<CommentInfo>? {
+        return remoteDataSource.getDutchCommentList(dutchId)
+    }
+
+    override suspend fun setDutchComment(commentInfo: CommentInfo): Boolean {
+        return remoteDataSource.setDutchComment(commentInfo)
     }
 }

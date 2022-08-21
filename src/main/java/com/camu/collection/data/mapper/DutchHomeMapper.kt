@@ -166,20 +166,20 @@ fun mapperFireBaseToDutchInfo(documentSnapshot: DocumentSnapshot?): DutchInfo {
         item.dutchId =  data?.get("dutchId").toString()
         item.userName = data?.get("userName").toString()
         item.title = data?.get("title").toString()
-        val dutchMemberList = documentSnapshot.data?.get("dutchMembers")
+        val dutchMemberList = data?.get("dutchMembers")
         if(dutchMemberList is ArrayList<*>) {
             dutchMemberList.forEach {
                 item.dutchMembers.add(it as DutchMemberInfo)
             }
         }
-        val subDutchInfoList = documentSnapshot.data?.get("subDutchInfos")
+        val subDutchInfoList = data?.get("subDutchInfos")
         if(subDutchInfoList is ArrayList<*>) {
             subDutchInfoList.forEach {
                 item.subDutchInfos.add(it as SubDutchInfo)
             }
         }
         item.contents = data?.get("contents").toString()
-        val contentsList = documentSnapshot.data?.get("contentsList")
+        val contentsList = data?.get("contentsList")
         if(contentsList is ArrayList<*>) {
             contentsList.forEach {
                 item.contentsList.add(it.toString())
@@ -206,4 +206,13 @@ fun mapperAddFirebaseUser(dutchInfo: DutchInfo, firebaseUser: FirebaseUser?): Du
         dutchInfo.photoUrl = firebaseUser.photoUrl.toString()
     }
     return dutchInfo
+}
+
+fun mapperAddFirebaseUser(commentInfo: CommentInfo, firebaseUser: FirebaseUser?): CommentInfo {
+    if(firebaseUser != null) {
+        commentInfo.writerId = firebaseUser.uid
+        commentInfo.writerName = firebaseUser.displayName ?: ""
+        commentInfo.photoUrl = firebaseUser.photoUrl.toString()
+    }
+    return commentInfo
 }

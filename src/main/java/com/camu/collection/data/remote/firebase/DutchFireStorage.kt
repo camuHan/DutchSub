@@ -37,7 +37,7 @@ class DutchFireStorage {
         return result
     }
 
-    suspend fun uploadImageListInStorage(
+    suspend fun uploadImageList(
         storageName: String,
         imageList: ArrayList<String>?
     ): ArrayList<String>? {
