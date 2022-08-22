@@ -75,7 +75,6 @@ class DutchFireStore {
     }
 
     fun getFlowDataList(collectionName: String): Flow<QuerySnapshot> = callbackFlow {
-//        var list: List<DocumentSnapshot>? = null
         var snapshot: QuerySnapshot? = null
         val db = FirebaseFirestore.getInstance()
         val subscription =
