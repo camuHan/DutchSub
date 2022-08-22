@@ -5,11 +5,11 @@ import com.camu.collection.domain.model.UserInfoModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -74,6 +74,49 @@ class DutchFireStore {
         return snapshot
     }
 
+    fun getFlowDataList(collectionName: String): Flow<QuerySnapshot> = callbackFlow {
+//        var list: List<DocumentSnapshot>? = null
+        var snapshot: QuerySnapshot? = null
+        val db = FirebaseFirestore.getInstance()
+        val subscription =
+            db.collection(collectionName)
+                .addSnapshotListener { snapshot, error ->
+            if(snapshot != null) {
+                CMLog.e("HSH", "success in")
+                trySend(snapshot)
+            } else {
+                CMLog.e("HSH", "fail in \n + ${error?.message}")
+            }
+        }
+        awaitClose {
+            subscription.remove()
+        }
+    }
+
+    fun getFlowDataListOrderBy(
+        collectionName: String,
+        order: String,
+        direction: Query.Direction
+    ): Flow<QuerySnapshot> = callbackFlow {
+//        var list: List<DocumentSnapshot>? = null
+        var snapshot: QuerySnapshot? = null
+        val db = FirebaseFirestore.getInstance()
+        val subscription =
+            db.collection(collectionName)
+                .orderBy(order, direction)
+                .addSnapshotListener { snapshot, error ->
+                    if(snapshot != null) {
+                        CMLog.e("HSH", "success in")
+                        trySend(snapshot)
+                    } else {
+                        CMLog.e("HSH", "fail in \n + ${error?.message}")
+                    }
+                }
+        awaitClose {
+            subscription.remove()
+        }
+    }
+
     suspend fun setData(collectionName: String, data: Any, documentId: String): Boolean {
         var result = false
         val uid = FirebaseAuth.getInstance().currentUser?.uid
@@ -131,6 +174,50 @@ class DutchFireStore {
             }.await()
 
         return snapshot
+    }
+
+    fun getFlowSubDataList(collectionName: String, documentId: String,
+                        subCollectionName: String): Flow<QuerySnapshot> = callbackFlow {
+        val db = FirebaseFirestore.getInstance()
+        val subscription =
+            db.collection(collectionName).document(documentId)
+                .collection(subCollectionName)
+                .addSnapshotListener { snapshot, error ->
+                    if(snapshot != null) {
+                        CMLog.e("HSH", "success in")
+                        trySend(snapshot)
+                    } else {
+                        CMLog.e("HSH", "fail in \n + ${error?.message}")
+                    }
+                }
+        awaitClose {
+            subscription.remove()
+        }
+    }
+
+    fun getFlowSubDataListOrderBy(
+        collectionName: String,
+        documentId: String,
+        subCollectionName: String,
+        order: String,
+        direction: Query.Direction
+    ): Flow<QuerySnapshot> = callbackFlow {
+        val db = FirebaseFirestore.getInstance()
+        val subscription =
+            db.collection(collectionName).document(documentId)
+                .collection(subCollectionName)
+                .orderBy(order, direction)
+                .addSnapshotListener { snapshot, error ->
+                    if(snapshot != null) {
+                        CMLog.e("HSH", "success in")
+                        trySend(snapshot)
+                    } else {
+                        CMLog.e("HSH", "fail in \n + ${error?.message}")
+                    }
+                }
+        awaitClose {
+            subscription.remove()
+        }
     }
 
     suspend fun setSubData(collectionName: String, documentId: String,

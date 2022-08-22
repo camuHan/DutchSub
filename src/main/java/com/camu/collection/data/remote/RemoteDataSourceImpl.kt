@@ -12,6 +12,8 @@ import com.camu.collection.domain.model.CommentInfo
 import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(
@@ -35,10 +37,15 @@ class RemoteDataSourceImpl @Inject constructor(
         return fireStorage.updateProfile(userInfoModel)
     }
 
-    override suspend fun getDutchOtherList(): List<DutchInfo>? {
-        val result = fireStore.getDataList(COLLECTION_NAME_DUTCHS)
-//        val list = result?.toObjects(DutchInfo::class.java)
-        return result?.toObjects(DutchInfo::class.java)
+    override fun getDutchOtherList(): Flow<List<DutchInfo>> {
+        val flowData = fireStore.getFlowDataListOrderBy(
+            COLLECTION_NAME_DUTCHS,
+            "modifiedTime",
+            Query.Direction.DESCENDING
+        )
+        return flowData.transform {
+            emit(it.toObjects(DutchInfo::class.java))
+        }
     }
 
     override suspend fun setDutchOther(dutchInfo: DutchInfo) {
@@ -69,9 +76,17 @@ class RemoteDataSourceImpl @Inject constructor(
         return fireStore.deleteData(COLLECTION_NAME_DUTCHS, dutchId)
     }
 
-    override suspend fun getDutchCommentList(dutchId: String): List<CommentInfo>? {
-        val result = fireStore.getSubDataList(COLLECTION_NAME_DUTCHS, dutchId, COLLECTION_NAME_COMMENTS)
-        return result?.toObjects(CommentInfo::class.java)
+    override fun getDutchCommentList(dutchId: String): Flow<List<CommentInfo>> {
+        val flowData = fireStore.getFlowSubDataListOrderBy(
+            COLLECTION_NAME_DUTCHS,
+            dutchId,
+            COLLECTION_NAME_COMMENTS,
+            "modifiedTime",
+            Query.Direction.ASCENDING
+        )
+        return flowData.transform {
+            emit(it.toObjects(CommentInfo::class.java))
+        }
     }
 
     override suspend fun setDutchComment(commentInfo: CommentInfo): Boolean {

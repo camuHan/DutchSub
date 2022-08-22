@@ -6,6 +6,7 @@ import com.camu.collection.domain.model.CommentInfo
 import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
 import com.camu.collection.domain.repository.FireBaseRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: RemoteDataSource) : FireBaseRepository {
@@ -23,7 +24,7 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
 
     /* dutch other */
 
-    override suspend fun getDutchOtherList() : List<DutchInfo>? {
+    override fun getDutchOtherList() : Flow<List<DutchInfo>> {
         return remoteDataSource.getDutchOtherList()/*.map { value ->
             mapperToDutchInfoList(value) }*/
 //        return mapperToDutchInfoList(localDataSource.getList())
@@ -37,7 +38,7 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
         return remoteDataSource.deleteDutchOther(dutchId)
     }
 
-    override suspend fun getDutchCommentList(dutchId: String): List<CommentInfo>? {
+    override fun getDutchCommentList(dutchId: String): Flow<List<CommentInfo>> {
         return remoteDataSource.getDutchCommentList(dutchId)
     }
 
