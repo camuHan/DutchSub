@@ -81,7 +81,7 @@ class RemoteDataSourceImpl @Inject constructor(
             COLLECTION_NAME_DUTCHS,
             dutchId,
             COLLECTION_NAME_COMMENTS,
-            "modifiedTime",
+            "rootId",
             Query.Direction.ASCENDING
         )
         return flowData.transform {
@@ -94,6 +94,9 @@ class RemoteDataSourceImpl @Inject constructor(
         commentInfo.modifiedTime = commentInfo.createdTime
         mapperAddFirebaseUser(commentInfo, mAuth.currentUser)
         commentInfo.commentId = commentInfo.writerId + commentInfo.modifiedTime
+        if(commentInfo.rootId.isEmpty()) {
+            commentInfo.rootId = commentInfo.commentId
+        }
 
         if(commentInfo.image.isNotEmpty()) {
             commentInfo.image = fireStorage.uploadImage(COLLECTION_NAME_COMMENTS, commentInfo.image) ?: ""
@@ -104,6 +107,15 @@ class RemoteDataSourceImpl @Inject constructor(
             commentInfo.dutchId,
             COLLECTION_NAME_COMMENTS,
             commentInfo, commentInfo.commentId
+        )
+    }
+
+    override fun likeEvent(commentInfo: CommentInfo) {
+        fireStore.likeEvent(
+            COLLECTION_NAME_DUTCHS,
+            commentInfo.dutchId,
+            COLLECTION_NAME_COMMENTS,
+            commentInfo.commentId
         )
     }
 }

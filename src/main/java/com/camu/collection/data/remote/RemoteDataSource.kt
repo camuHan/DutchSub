@@ -16,4 +16,6 @@ interface RemoteDataSource {
 
     fun getDutchCommentList(dutchId: String): Flow<List<CommentInfo>>
     suspend fun setDutchComment(commentInfo: CommentInfo): Boolean
+
+    fun likeEvent(commentInfo: CommentInfo)
 }

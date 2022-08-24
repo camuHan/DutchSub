@@ -1,16 +1,17 @@
 package com.camu.collection.data.remote.firebase
 
 import com.camu.collection.data.utils.CMLog
+import com.camu.collection.domain.model.CommentInfo
 import com.camu.collection.domain.model.UserInfoModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.*
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 private val TAG = DutchFireStorage::class.java.simpleName
@@ -59,8 +60,7 @@ class DutchFireStore {
     suspend fun getDataList(collectionName: String): QuerySnapshot? {
 //        var list: List<DocumentSnapshot>? = null
         var snapshot: QuerySnapshot? = null
-        val db = FirebaseFirestore.getInstance()
-        db.collection(collectionName).get()
+        mFireStore.collection(collectionName).get()
             .addOnCompleteListener {
                 if(!it.isSuccessful) {
                     CMLog.e("HSH", "fail in \n + ${it.exception}")
@@ -76,9 +76,8 @@ class DutchFireStore {
 
     fun getFlowDataList(collectionName: String): Flow<QuerySnapshot> = callbackFlow {
         var snapshot: QuerySnapshot? = null
-        val db = FirebaseFirestore.getInstance()
         val subscription =
-            db.collection(collectionName)
+            mFireStore.collection(collectionName)
                 .addSnapshotListener { snapshot, error ->
             if(snapshot != null) {
                 CMLog.e("HSH", "success in")
@@ -99,9 +98,8 @@ class DutchFireStore {
     ): Flow<QuerySnapshot> = callbackFlow {
 //        var list: List<DocumentSnapshot>? = null
         var snapshot: QuerySnapshot? = null
-        val db = FirebaseFirestore.getInstance()
         val subscription =
-            db.collection(collectionName)
+            mFireStore.collection(collectionName)
                 .orderBy(order, direction)
                 .addSnapshotListener { snapshot, error ->
                     if(snapshot != null) {
@@ -119,9 +117,8 @@ class DutchFireStore {
     suspend fun setData(collectionName: String, data: Any, documentId: String): Boolean {
         var result = false
         val uid = FirebaseAuth.getInstance().currentUser?.uid
-        val db = FirebaseFirestore.getInstance()
         if(uid != null) {
-            db.collection(collectionName)
+            mFireStore.collection(collectionName)
                 .document(documentId)
                 .set(data).addOnCompleteListener {
                     if (it.isSuccessful) {
@@ -141,9 +138,8 @@ class DutchFireStore {
 
         var result = false
         val uid = FirebaseAuth.getInstance().currentUser?.uid
-        val db = FirebaseFirestore.getInstance()
         if(uid != null) {
-            db.collection(collectionName)
+            mFireStore.collection(collectionName)
                 .document(documentId).delete()
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
@@ -160,8 +156,7 @@ class DutchFireStore {
                                           subCollectionName: String): QuerySnapshot? {
 //        var list: List<DocumentSnapshot>? = null
         var snapshot: QuerySnapshot? = null
-        val db = FirebaseFirestore.getInstance()
-        db.collection(collectionName).document(documentId)
+        mFireStore.collection(collectionName).document(documentId)
             .collection(subCollectionName).get()
             .addOnCompleteListener {
                 if(!it.isSuccessful) {
@@ -177,9 +172,8 @@ class DutchFireStore {
 
     fun getFlowSubDataList(collectionName: String, documentId: String,
                         subCollectionName: String): Flow<QuerySnapshot> = callbackFlow {
-        val db = FirebaseFirestore.getInstance()
         val subscription =
-            db.collection(collectionName).document(documentId)
+            mFireStore.collection(collectionName).document(documentId)
                 .collection(subCollectionName)
                 .addSnapshotListener { snapshot, error ->
                     if(snapshot != null) {
@@ -199,11 +193,10 @@ class DutchFireStore {
         documentId: String,
         subCollectionName: String,
         order: String,
-        direction: Query.Direction
+        direction: Query.Direction,
     ): Flow<QuerySnapshot> = callbackFlow {
-        val db = FirebaseFirestore.getInstance()
         val subscription =
-            db.collection(collectionName).document(documentId)
+            mFireStore.collection(collectionName).document(documentId)
                 .collection(subCollectionName)
                 .orderBy(order, direction)
                 .addSnapshotListener { snapshot, error ->
@@ -223,10 +216,11 @@ class DutchFireStore {
                            subCollectionName: String, data: Any, subDocumentId: String): Boolean {
         var result = false
         val uid = FirebaseAuth.getInstance().currentUser?.uid
-        val db = FirebaseFirestore.getInstance()
         if(uid != null) {
-            db.collection(collectionName)
-                .document(documentId).collection(subCollectionName).document(subDocumentId)
+            mFireStore.collection(collectionName)
+                .document(documentId)
+                .collection(subCollectionName)
+                .document(subDocumentId)
                 .set(data).addOnCompleteListener {
                     if (it.isSuccessful) {
                         result = true
@@ -236,5 +230,25 @@ class DutchFireStore {
                 }.await()
         }
         return result
+    }
+
+    fun likeEvent(collectionName: String, documentId: String,
+                  subCollectionName: String, subDocumentId: String) {
+        val uid = mAuth.currentUser?.uid ?: return
+        val doc = mFireStore.collection(collectionName)
+            .document(documentId)
+            .collection(subCollectionName)
+            .document(subDocumentId)
+        mFireStore.runTransaction { transaction ->
+            val contentDTO = transaction.get(doc).toObject(CommentInfo::class.java)
+            if(contentDTO?.likeList?.contains(uid) == true) {
+                contentDTO.likeList.remove(uid)
+            } else {
+                contentDTO?.likeList?.add(uid)
+            }
+            if (contentDTO != null) {
+                transaction.set(doc, contentDTO)
+            }
+        }
     }
 }
