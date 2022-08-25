@@ -110,6 +110,15 @@ class RemoteDataSourceImpl @Inject constructor(
         )
     }
 
+    override suspend fun deleteDutchComment(commentInfo: CommentInfo): Boolean {
+        return fireStore.deleteSubData(
+            COLLECTION_NAME_DUTCHS,
+            commentInfo.dutchId,
+            COLLECTION_NAME_COMMENTS,
+            commentInfo.commentId
+        )
+    }
+
     override fun likeEvent(commentInfo: CommentInfo) {
         fireStore.likeEvent(
             COLLECTION_NAME_DUTCHS,

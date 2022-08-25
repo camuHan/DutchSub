@@ -46,6 +46,10 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
         return remoteDataSource.setDutchComment(commentInfo)
     }
 
+    override suspend fun deleteDutchComment(commentInfo: CommentInfo): Boolean {
+        return remoteDataSource.deleteDutchComment(commentInfo)
+    }
+
     override fun likeEvent(commentInfo: CommentInfo) {
         return remoteDataSource.likeEvent(commentInfo)
     }

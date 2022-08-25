@@ -232,6 +232,26 @@ class DutchFireStore {
         return result
     }
 
+    suspend fun deleteSubData(collectionName: String, documentId: String,
+                           subCollectionName: String, subDocumentId: String): Boolean {
+        var result = false
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if(uid != null) {
+            mFireStore.collection(collectionName)
+                .document(documentId)
+                .collection(subCollectionName)
+                .document(subDocumentId)
+                .delete().addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        result = true
+                    } else {
+                        CMLog.e(TAG, "fail in \n + ${it.exception}")
+                    }
+                }.await()
+        }
+        return result
+    }
+
     fun likeEvent(collectionName: String, documentId: String,
                   subCollectionName: String, subDocumentId: String) {
         val uid = mAuth.currentUser?.uid ?: return
