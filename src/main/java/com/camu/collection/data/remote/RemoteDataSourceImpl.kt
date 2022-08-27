@@ -52,7 +52,7 @@ class RemoteDataSourceImpl @Inject constructor(
         dutchInfo.createdTime = System.currentTimeMillis().toString()
         dutchInfo.modifiedTime = dutchInfo.createdTime
         mapperAddFirebaseUser(dutchInfo, mAuth.currentUser)
-        dutchInfo.dutchId = dutchInfo.userId + dutchInfo.modifiedTime
+        dutchInfo.dutchId = dutchInfo.modifiedTime + dutchInfo.userId
 
         convertToDutchFireStoreImage(dutchInfo)
 
@@ -81,20 +81,31 @@ class RemoteDataSourceImpl @Inject constructor(
             COLLECTION_NAME_DUTCHS,
             dutchId,
             COLLECTION_NAME_COMMENTS,
-            "rootId",
+            "modifiedTime",
             Query.Direction.ASCENDING
         )
         return flowData.transform {
-            emit(it.toObjects(CommentInfo::class.java))
+            emit(
+                it.toObjects(CommentInfo::class.java).toList().sortedWith(
+                    compareBy<CommentInfo> {
+                        it.rootId
+                    }.thenBy {
+                        it.modifiedTime
+                    }
+                )
+            )
+//            emit(it.toObjects(CommentInfo::class.java))
         }
     }
 
     override suspend fun setDutchComment(commentInfo: CommentInfo): Boolean {
         commentInfo.createdTime = System.currentTimeMillis().toString()
         commentInfo.modifiedTime = commentInfo.createdTime
-        mapperAddFirebaseUser(commentInfo, mAuth.currentUser)
-        commentInfo.commentId = commentInfo.writerId + commentInfo.modifiedTime
-        if(commentInfo.rootId.isEmpty()) {
+        if(mAuth.currentUser != null) {
+            mapperAddFirebaseUser(commentInfo, mAuth.currentUser)
+        }
+        commentInfo.commentId = commentInfo.modifiedTime + commentInfo.writerId
+                if(commentInfo.rootId.isEmpty()) {
             commentInfo.rootId = commentInfo.commentId
         }
 

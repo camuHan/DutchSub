@@ -1,10 +1,9 @@
 package com.camu.collection.data.repository
 
 import com.camu.collection.data.local.LocalDataSource
-import com.camu.collection.data.mapper.mapperToDutchEntity
-import com.camu.collection.data.mapper.mapperToDutchInfo
-import com.camu.collection.data.mapper.mapperToDutchInfoList
+import com.camu.collection.data.mapper.*
 import com.camu.collection.domain.model.DutchInfo
+import com.camu.collection.domain.model.UserInfoModel
 import com.camu.collection.domain.repository.DutchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -37,5 +36,17 @@ class DutchRepositoryImpl @Inject constructor(
 
     override suspend fun updateDutch(dutchInfo: DutchInfo) {
         localDataSource.updateData(mapperToDutchEntity(dutchInfo))
+    }
+
+    override suspend fun getUnknownUser(): UserInfoModel? {
+        return mapperToUserInfo(localDataSource.getUnknownUser())
+    }
+
+    override suspend fun setUnknownUser(userInfo: UserInfoModel) {
+        localDataSource.setUnknownUser(mapperToUserEntity(userInfo))
+    }
+
+    override suspend fun updateUnknownUser(userInfo: UserInfoModel) {
+        localDataSource.updateUnknownUser(mapperToUserEntity(userInfo))
     }
 }

@@ -46,15 +46,27 @@ class DutchFireStore {
         mUserProfile.email = firebaseUser.email
         val photoUrl = if (firebaseUser.photoUrl == null) "" else firebaseUser.photoUrl.toString()
         mUserProfile.photoUrl = photoUrl
-        mUserProfile.timestapCreated = FieldValue.serverTimestamp().toString()
+        mUserProfile.timestampCreated = FieldValue.serverTimestamp().toString()
 
-        mFireStore.collection(collectionName)
-            .document(firebaseUser.uid)
-            .set(mUserProfile)
-            .addOnSuccessListener {
-                CMLog.d(TAG, "DocumentSnapshot successfully written!")
-            }
-            .addOnFailureListener { e -> CMLog.w(TAG, "Error writing document \n$e") }
+        setUserData(collectionName, mUserProfile, firebaseUser.uid)
+
+//        mFireStore.collection(collectionName)
+//            .document(firebaseUser.uid)
+//            .set(mUserProfile)
+//            .addOnSuccessListener {
+//                CMLog.d(TAG, "DocumentSnapshot successfully written!")
+//            }
+//            .addOnFailureListener { e -> CMLog.w(TAG, "Error writing document \n$e") }
+    }
+
+    fun setUserData(collectionName: String, data: Any, documentId: String) {
+        val doc = mFireStore.collection(collectionName)
+            .document(documentId)
+
+        mFireStore.runTransaction { transaction ->
+//            val snapshot = transaction.get(doc)
+            transaction.set(doc, data)
+        }
     }
 
     suspend fun getDataList(collectionName: String): QuerySnapshot? {
@@ -215,40 +227,36 @@ class DutchFireStore {
     suspend fun setSubData(collectionName: String, documentId: String,
                            subCollectionName: String, data: Any, subDocumentId: String): Boolean {
         var result = false
-        val uid = FirebaseAuth.getInstance().currentUser?.uid
-        if(uid != null) {
-            mFireStore.collection(collectionName)
-                .document(documentId)
-                .collection(subCollectionName)
-                .document(subDocumentId)
-                .set(data).addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        result = true
-                    } else {
-                        CMLog.e(TAG, "fail in \n + ${it.exception}")
-                    }
-                }.await()
-        }
+        mFireStore.collection(collectionName)
+            .document(documentId)
+            .collection(subCollectionName)
+            .document(subDocumentId)
+            .set(data).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    result = true
+                } else {
+                    CMLog.e(TAG, "fail in \n + ${it.exception}")
+                }
+            }.await()
+
         return result
     }
 
     suspend fun deleteSubData(collectionName: String, documentId: String,
                            subCollectionName: String, subDocumentId: String): Boolean {
         var result = false
-        val uid = FirebaseAuth.getInstance().currentUser?.uid
-        if(uid != null) {
-            mFireStore.collection(collectionName)
-                .document(documentId)
-                .collection(subCollectionName)
-                .document(subDocumentId)
-                .delete().addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        result = true
-                    } else {
-                        CMLog.e(TAG, "fail in \n + ${it.exception}")
-                    }
-                }.await()
-        }
+        mFireStore.collection(collectionName)
+            .document(documentId)
+            .collection(subCollectionName)
+            .document(subDocumentId)
+            .delete().addOnCompleteListener {
+                if (it.isSuccessful) {
+                    result = true
+                } else {
+                    CMLog.e(TAG, "fail in \n + ${it.exception}")
+                }
+            }.await()
+
         return result
     }
 

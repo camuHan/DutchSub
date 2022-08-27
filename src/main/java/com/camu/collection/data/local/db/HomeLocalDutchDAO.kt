@@ -4,6 +4,8 @@ import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.camu.collection.data.model.DutchInfoDbEntity
 import com.camu.collection.data.model.SubDutchInfoDbEntity
+import com.camu.collection.data.model.UserInfoDbEntity
+import com.camu.collection.domain.model.UserInfoModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -36,18 +38,17 @@ interface HomeLocalDutchDAO {
     suspend fun searchItems(keyword: String): List<DutchInfoDbEntity>
 
 
-//    @Insert(onConflict = REPLACE)
-//    fun insert(file: SubDutchInfoDbEntity)
-//
-//    @Update
-//    fun update(file: SubDutchInfoDbEntity)
-//
-//    @Delete
-//    fun delete(file: SubDutchInfoDbEntity)
 
-//    @Query("SELECT * FROM SubDutchInfo WHERE subId = :subId")
-//    fun getSubItem(subId: String): SubDutchInfoDbEntity
-//
-//    @Query("SELECT * FROM SubDutchInfo WHERE parentId LIKE :parentId || '%'")
-//    fun getSubItems(parentId: String): List<SubDutchInfoDbEntity>
+    @Insert(onConflict = REPLACE)
+    suspend fun insert(userInfo: UserInfoDbEntity)
+
+    @Query("SELECT * FROM UserInfo WHERE id = :id")
+    suspend fun getUserItem(id: Long): UserInfoDbEntity
+
+    @Update
+    suspend fun update(userInfo: UserInfoDbEntity)
+
+    @Delete
+    suspend fun delete(userInfo: UserInfoDbEntity)
+
 }

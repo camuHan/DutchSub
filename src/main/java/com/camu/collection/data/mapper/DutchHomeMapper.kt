@@ -1,10 +1,41 @@
 package com.camu.collection.data.mapper
 
 import com.camu.collection.data.model.DutchInfoDbEntity
+import com.camu.collection.data.model.UserInfoDbEntity
 import com.camu.collection.domain.model.*
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
 
+fun mapperToUserInfo(userInfoDbEntity: UserInfoDbEntity?): UserInfoModel? {
+    if(userInfoDbEntity == null) {
+        return null
+    }
+    return UserInfoModel(
+        id = userInfoDbEntity.id,
+        userId = userInfoDbEntity.userId,
+        name = userInfoDbEntity.name,
+        email = userInfoDbEntity.email,
+        password = userInfoDbEntity.password,
+        phoneNumber = userInfoDbEntity.phoneNumber,
+        photoUrl = userInfoDbEntity.photoUrl,
+        timestampCreated = userInfoDbEntity.timestampCreated,
+        isUnknown = true
+    )
+}
+
+fun mapperToUserEntity(userInfo: UserInfoModel): UserInfoDbEntity {
+    return UserInfoDbEntity(
+        id = userInfo.id,
+        userId = userInfo.userId,
+        name = userInfo.name,
+        email = userInfo.email,
+        password = userInfo.password,
+        phoneNumber = userInfo.phoneNumber,
+        photoUrl = userInfo.photoUrl,
+        timestampCreated = userInfo.timestampCreated,
+        isUnknown = true
+    )
+}
 
 fun mapperToDutchInfoList(dutchInfoEntityList: List<DutchInfoDbEntity>): List<DutchInfo> {
     return dutchInfoEntityList.toList().map { dutchInfoEntity ->
