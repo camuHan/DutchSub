@@ -2,13 +2,11 @@ package com.camu.collection.data.remote.firebase
 
 import com.camu.collection.data.utils.CMLog
 import com.camu.collection.domain.model.CommentInfo
+import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -121,6 +119,27 @@ class DutchFireStore {
                         CMLog.e("HSH", "fail in \n + ${error?.message}")
                     }
                 }
+        awaitClose {
+            subscription.remove()
+        }
+    }
+
+    fun getFlowData(
+        collectionName: String,
+        documentId: String
+    ): Flow<DocumentSnapshot> = callbackFlow {
+        val subscription =
+            mFireStore.collection(collectionName)
+                .document(documentId)
+                .addSnapshotListener { snapshot, error ->
+                    if(snapshot != null) {
+                        CMLog.e("HSH", "success in")
+                        trySend(snapshot)
+                    } else {
+                        CMLog.e("HSH", "fail in \n + ${error?.message}")
+                    }
+                }
+
         awaitClose {
             subscription.remove()
         }
@@ -260,8 +279,30 @@ class DutchFireStore {
         return result
     }
 
-    fun likeEvent(collectionName: String, documentId: String,
-                  subCollectionName: String, subDocumentId: String) {
+    fun searchCountEvent(collectionName: String, documentId: String) {
+        val doc = mFireStore.collection(collectionName)
+            .document(documentId)
+        mFireStore.runTransaction { transaction ->
+            val contentDTO = transaction.get(doc).toObject(DutchInfo::class.java) ?: return@runTransaction
+            contentDTO.viewCount = contentDTO.viewCount.plus(1)
+
+            transaction.set(doc, contentDTO)
+        }
+    }
+
+    fun commentCountEvent(collectionName: String, documentId: String, add: Int) {
+        val doc = mFireStore.collection(collectionName)
+            .document(documentId)
+        mFireStore.runTransaction { transaction ->
+            val contentDTO = transaction.get(doc).toObject(DutchInfo::class.java) ?: return@runTransaction
+            contentDTO.commentCount = contentDTO.commentCount.plus(add)
+
+            transaction.set(doc, contentDTO)
+        }
+    }
+
+    fun commentLikeEvent(collectionName: String, documentId: String,
+                         subCollectionName: String, subDocumentId: String) {
         val uid = mAuth.currentUser?.uid ?: return
         val doc = mFireStore.collection(collectionName)
             .document(documentId)

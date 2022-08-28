@@ -25,9 +25,11 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
     /* dutch other */
 
     override fun getDutchOtherList() : Flow<List<DutchInfo>> {
-        return remoteDataSource.getDutchOtherList()/*.map { value ->
-            mapperToDutchInfoList(value) }*/
-//        return mapperToDutchInfoList(localDataSource.getList())
+        return remoteDataSource.getDutchOtherList()
+    }
+
+    override fun getDutchOther(dutchId: String): Flow<DutchInfo?> {
+        return remoteDataSource.getDutchOther(dutchId)
     }
 
     override suspend fun setDutchOther(dutchInfo: DutchInfo): Boolean {

@@ -48,6 +48,22 @@ class RemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override fun getDutchOther(dutchId: String): Flow<DutchInfo?> {
+        val flowData = fireStore.getFlowData(
+            COLLECTION_NAME_DUTCHS,
+            dutchId
+        )
+
+        fireStore.searchCountEvent(
+            COLLECTION_NAME_DUTCHS,
+            dutchId
+        )
+
+        return flowData.transform {
+            emit(it.toObject(DutchInfo::class.java))
+        }
+    }
+
     override suspend fun setDutchOther(dutchInfo: DutchInfo): Boolean {
         dutchInfo.createdTime = System.currentTimeMillis().toString()
         dutchInfo.modifiedTime = dutchInfo.createdTime
@@ -99,6 +115,7 @@ class RemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun setDutchComment(commentInfo: CommentInfo): Boolean {
+        var result = false
         commentInfo.createdTime = System.currentTimeMillis().toString()
         commentInfo.modifiedTime = commentInfo.createdTime
         if(mAuth.currentUser != null) {
@@ -113,25 +130,47 @@ class RemoteDataSourceImpl @Inject constructor(
             commentInfo.image = fireStorage.uploadImage(COLLECTION_NAME_COMMENTS, commentInfo.image) ?: ""
         }
 
-        return fireStore.setSubData(
+        result = fireStore.setSubData(
             COLLECTION_NAME_DUTCHS,
             commentInfo.dutchId,
             COLLECTION_NAME_COMMENTS,
             commentInfo, commentInfo.commentId
         )
+
+        if(result) {
+            fireStore.commentCountEvent(
+                COLLECTION_NAME_DUTCHS,
+                commentInfo.dutchId,
+                1
+            )
+        }
+
+        return result
     }
 
     override suspend fun deleteDutchComment(commentInfo: CommentInfo): Boolean {
-        return fireStore.deleteSubData(
+        var result = false
+
+        result = fireStore.deleteSubData(
             COLLECTION_NAME_DUTCHS,
             commentInfo.dutchId,
             COLLECTION_NAME_COMMENTS,
             commentInfo.commentId
         )
+
+        if(result) {
+            fireStore.commentCountEvent(
+                COLLECTION_NAME_DUTCHS,
+                commentInfo.dutchId,
+                -1
+            )
+        }
+
+        return result
     }
 
     override fun likeEvent(commentInfo: CommentInfo) {
-        fireStore.likeEvent(
+        fireStore.commentLikeEvent(
             COLLECTION_NAME_DUTCHS,
             commentInfo.dutchId,
             COLLECTION_NAME_COMMENTS,
