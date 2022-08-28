@@ -11,7 +11,7 @@ interface RemoteDataSource {
     suspend fun updateProfileData(userInfoModel: UserInfoModel): Boolean
 
     fun getDutchOtherList(): Flow<List<DutchInfo>>
-    suspend fun setDutchOther(dutchInfo: DutchInfo)
+    suspend fun setDutchOther(dutchInfo: DutchInfo): Boolean
     suspend fun deleteDutchOther(dutchId: String): Boolean
 
     fun getDutchCommentList(dutchId: String): Flow<List<CommentInfo>>

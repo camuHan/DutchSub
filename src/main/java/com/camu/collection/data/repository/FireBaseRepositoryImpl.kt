@@ -30,8 +30,8 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
 //        return mapperToDutchInfoList(localDataSource.getList())
     }
 
-    override suspend fun setDutchOther(dutchInfo: DutchInfo) {
-        remoteDataSource.setDutchOther(dutchInfo)
+    override suspend fun setDutchOther(dutchInfo: DutchInfo): Boolean {
+        return remoteDataSource.setDutchOther(dutchInfo)
     }
 
     override suspend fun deleteDutchOther(dutchId: String): Boolean {

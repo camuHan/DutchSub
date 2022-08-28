@@ -48,7 +48,7 @@ class RemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun setDutchOther(dutchInfo: DutchInfo) {
+    override suspend fun setDutchOther(dutchInfo: DutchInfo): Boolean {
         dutchInfo.createdTime = System.currentTimeMillis().toString()
         dutchInfo.modifiedTime = dutchInfo.createdTime
         mapperAddFirebaseUser(dutchInfo, mAuth.currentUser)
@@ -56,7 +56,7 @@ class RemoteDataSourceImpl @Inject constructor(
 
         convertToDutchFireStoreImage(dutchInfo)
 
-        fireStore.setData(COLLECTION_NAME_DUTCHS, dutchInfo, dutchInfo.dutchId)
+        return fireStore.setData(COLLECTION_NAME_DUTCHS, dutchInfo, dutchInfo.dutchId)
     }
 
     private suspend fun convertToDutchFireStoreImage(dutchInfo: DutchInfo) {
