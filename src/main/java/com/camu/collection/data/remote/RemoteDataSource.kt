@@ -19,5 +19,6 @@ interface RemoteDataSource {
     suspend fun setDutchComment(commentInfo: CommentInfo): Boolean
     suspend fun deleteDutchComment(commentInfo: CommentInfo): Boolean
 
+    fun dutchLikeEvent(dutchId: String)
     fun likeEvent(commentInfo: CommentInfo)
 }

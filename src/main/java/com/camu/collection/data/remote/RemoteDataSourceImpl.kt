@@ -169,6 +169,13 @@ class RemoteDataSourceImpl @Inject constructor(
         return result
     }
 
+    override fun dutchLikeEvent(dutchId: String) {
+        fireStore.dutchLikeEvent(
+            COLLECTION_NAME_DUTCHS,
+            dutchId
+        )
+    }
+
     override fun likeEvent(commentInfo: CommentInfo) {
         fireStore.commentLikeEvent(
             COLLECTION_NAME_DUTCHS,

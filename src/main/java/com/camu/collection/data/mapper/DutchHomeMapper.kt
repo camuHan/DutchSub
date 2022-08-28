@@ -71,7 +71,11 @@ fun mapperToDutchInfo(dutchInfoEntity: DutchInfoDbEntity): DutchInfo {
         createdTime = dutchInfoEntity.createdTime,
         modifiedTime = dutchInfoEntity.modifiedTime,
         photoUrl = dutchInfoEntity.photoUrl,
-        likeCount = dutchInfoEntity.likeCount,
+        likeList = if(dutchInfoEntity.likeList.isNotEmpty()) {
+            dutchInfoEntity.likeList as ArrayList<String>
+        } else {
+            ArrayList()
+        },
         commentCount = dutchInfoEntity.commentCount,
         viewCount = dutchInfoEntity.viewCount,
         password = dutchInfoEntity.password,
@@ -101,7 +105,7 @@ fun mapperToDutchEntity(dutchInfo: DutchInfo): DutchInfoDbEntity {
         createdTime = dutchInfo.createdTime,
         modifiedTime = dutchInfo.modifiedTime,
         photoUrl = dutchInfo.photoUrl,
-        likeCount = dutchInfo.likeCount,
+        likeList = dutchInfo.likeList,
         commentCount = dutchInfo.commentCount,
         viewCount = dutchInfo.viewCount,
         password = dutchInfo.password,
@@ -221,7 +225,12 @@ fun mapperFireBaseToDutchInfo(documentSnapshot: DocumentSnapshot?): DutchInfo {
         item.createdTime = data?.get("createdTime").toString()
         item.modifiedTime = data?.get("modifiedTime").toString()
         item.photoUrl = data?.get("photoUrl").toString()
-        item.likeCount = data?.get("likeCount") as Int
+        val likeList = data?.get("likeList")
+        if(likeList is ArrayList<*>) {
+            likeList.forEach {
+                item.likeList.add(it.toString())
+            }
+        }
         item.commentCount = data?.get("commentCount") as Int
         item.viewCount = data?.get("viewCount") as Int
         item.password = data?.get("password").toString()

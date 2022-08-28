@@ -23,7 +23,7 @@ data class DutchInfoDbEntity(
     var createdTime: String = "",
     var modifiedTime: String = "",
     var photoUrl: String = "",
-    var likeCount: Int = 0,
+    var likeList: List<String> = ArrayList(),
     var commentCount: Int = 0,
     var viewCount: Int = 0,
     var password: String = "",

@@ -301,6 +301,22 @@ class DutchFireStore {
         }
     }
 
+    fun dutchLikeEvent(collectionName: String, documentId: String) {
+        val uid = mAuth.currentUser?.uid ?: return
+        val doc = mFireStore.collection(collectionName)
+            .document(documentId)
+        mFireStore.runTransaction { transaction ->
+            val contentDTO = transaction.get(doc).toObject(DutchInfo::class.java) ?: return@runTransaction
+            if(contentDTO.likeList.contains(uid)) {
+                contentDTO.likeList.remove(uid)
+            } else {
+                contentDTO.likeList.add(uid)
+            }
+
+            transaction.set(doc, contentDTO)
+        }
+    }
+
     fun commentLikeEvent(collectionName: String, documentId: String,
                          subCollectionName: String, subDocumentId: String) {
         val uid = mAuth.currentUser?.uid ?: return
