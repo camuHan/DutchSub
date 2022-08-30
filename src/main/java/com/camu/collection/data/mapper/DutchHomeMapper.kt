@@ -156,7 +156,13 @@ fun mapperDeleteSubDutchMemberList(
     dutchMembers.forEach { mainMember ->
         subDutchMembers.forEach { subMember ->
             if(mainMember.memberName == subMember.memberName) {
-                mainMember.subDutchMemberInfo.removeAt(position)
+                var deletePosition = 0
+                mainMember.subDutchMemberInfo.forEachIndexed { index, subDutchMemberInfo ->
+                    if(subDutchMemberInfo.roundOrder == position+1) {
+                        deletePosition = index
+                    }
+                }
+                mainMember.subDutchMemberInfo.removeAt(deletePosition)
             }
         }
     }
