@@ -76,15 +76,9 @@ class RemoteDataSourceImpl @Inject constructor(
     }
 
     private suspend fun convertToDutchFireStoreImage(dutchInfo: DutchInfo) {
-        var imageList = ArrayList<String>()
         dutchInfo.subDutchInfos.forEach { subDutchInfo ->
-            imageList.add(subDutchInfo.receipt)
-        }
-        val dutchStorageName = FIREBASE_STORAGE_DUTCH_IMAGES + "/" + dutchInfo.dutchId
-        imageList = fireStorage.uploadImageList(dutchStorageName, imageList) ?: ArrayList()
-
-        imageList.forEachIndexed { index, image ->
-            dutchInfo.subDutchInfos[index].receipt = image
+            val dutchStorageName = FIREBASE_STORAGE_DUTCH_IMAGES + "/" + dutchInfo.dutchId
+            subDutchInfo.receiptList = fireStorage.uploadImageList(dutchStorageName, subDutchInfo.receiptList) ?: ArrayList()
         }
     }
 
