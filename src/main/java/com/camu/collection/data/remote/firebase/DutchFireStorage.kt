@@ -12,6 +12,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storageMetadata
 import kotlinx.coroutines.tasks.await
+import java.io.File
 
 class DutchFireStorage {
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -67,7 +68,7 @@ class DutchFireStorage {
             val fileName: String = uri.substring(lastIndex + 1)
             val imageRef = imageStorageRef.child(fileName)
 
-            imageRef.putFile(Uri.parse(uri)).continueWithTask {
+            imageRef.putFile(Uri.fromFile(File(uri))).continueWithTask {
                 return@continueWithTask imageRef.downloadUrl
             }.addOnCompleteListener{
                 if(it.isSuccessful) {

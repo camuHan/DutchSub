@@ -8,7 +8,7 @@ import com.camu.collection.domain.model.SubDutchInfo
 
 @Entity(tableName = "DutchInfo")
 data class DutchInfoDbEntity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     var id: Long? = null,
     var userId: String = "",
     var dutchId: String = "",
