@@ -1,5 +1,6 @@
 package com.camu.collection.data.remote
 
+import com.camu.collection.data.define.DataDefine.FireBaseStorage.FIREBASE_STORAGE_COMMENT_IMAGE
 import com.camu.collection.data.define.DataDefine.FireBaseStorage.FIREBASE_STORAGE_DUTCH_IMAGES
 import com.camu.collection.data.define.DataDefine.FireBaseStorage.FIREBASE_STORAGE_PROFILE_IMAGES
 import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_COMMENTS
@@ -27,12 +28,12 @@ class RemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun uploadProfileImage(uri: String?): String? {
-        return fireStorage.uploadImage(
+        return fireStorage.upload(
             FIREBASE_STORAGE_PROFILE_IMAGES + "/" + mAuth.currentUser?.uid
             , uri)
     }
 
-    suspend override fun updateProfileData(userInfoModel: UserInfoModel): Boolean {
+    override suspend fun updateProfileData(userInfoModel: UserInfoModel): Boolean {
 //        val url = uploadProfileImage(userInfoModel.photoUrl)
         return fireStorage.updateProfile(userInfoModel)
     }
@@ -78,12 +79,21 @@ class RemoteDataSourceImpl @Inject constructor(
     private suspend fun convertToDutchFireStoreImage(dutchInfo: DutchInfo) {
         dutchInfo.subDutchInfos.forEach { subDutchInfo ->
             val dutchStorageName = FIREBASE_STORAGE_DUTCH_IMAGES + "/" + dutchInfo.dutchId
-            subDutchInfo.receiptList = fireStorage.uploadImageList(dutchStorageName, subDutchInfo.receiptList) ?: ArrayList()
+            subDutchInfo.receiptList = fireStorage.uploadImageFileList(dutchStorageName, subDutchInfo.receiptList) ?: ArrayList()
         }
     }
 
     override suspend fun deleteDutchOther(dutchId: String): Boolean {
-        return fireStore.deleteData(COLLECTION_NAME_DUTCHS, dutchId)
+        var result = false
+        val dutchStorageName = FIREBASE_STORAGE_DUTCH_IMAGES + "/" + dutchId
+        result = fireStore.deleteData(COLLECTION_NAME_DUTCHS, dutchId)
+        if(result) {
+            val storageList = fireStorage.getList(dutchStorageName)
+            storageList.forEach {
+                fireStorage.deleteByRef(it)
+            }
+        }
+        return result
     }
 
     override fun getDutchCommentList(dutchId: String): Flow<List<CommentInfo>> {
@@ -121,7 +131,11 @@ class RemoteDataSourceImpl @Inject constructor(
         }
 
         if(commentInfo.image.isNotEmpty()) {
-            commentInfo.image = fireStorage.uploadImage(COLLECTION_NAME_COMMENTS, commentInfo.image) ?: ""
+            val dutchStorageCommentName = FIREBASE_STORAGE_DUTCH_IMAGES +
+                    "/" + commentInfo.dutchId +
+                    "/" + FIREBASE_STORAGE_COMMENT_IMAGE +
+                    "_" + commentInfo.commentId
+            commentInfo.image = fireStorage.upload(dutchStorageCommentName, commentInfo.image) ?: ""
         }
 
         result = fireStore.setSubData(
@@ -144,6 +158,14 @@ class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun deleteDutchComment(commentInfo: CommentInfo): Boolean {
         var result = false
+
+        if(commentInfo.image.isNotEmpty()) {
+            val dutchStorageCommentName = FIREBASE_STORAGE_DUTCH_IMAGES +
+                    "/" + commentInfo.dutchId +
+                    "/" + FIREBASE_STORAGE_COMMENT_IMAGE +
+                    "_" + commentInfo.commentId
+            fireStorage.delete(dutchStorageCommentName)
+        }
 
         result = fireStore.deleteSubData(
             COLLECTION_NAME_DUTCHS,

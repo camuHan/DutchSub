@@ -9,6 +9,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storageMetadata
 import kotlinx.coroutines.tasks.await
@@ -18,7 +19,7 @@ class DutchFireStorage {
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val storageRef = FirebaseStorage.getInstance().reference
 
-    suspend fun uploadImage(storageName: String, uri: String?): String? {
+    suspend fun upload(storageName: String, uri: String?): String? {
         if (uri == "") {
             return null
         }
@@ -36,6 +37,90 @@ class DutchFireStorage {
             }
         }.await()
         return result
+    }
+
+    suspend fun delete(storageName: String): Boolean {
+        val imageRef = storageRef.child(storageName)
+        var result = false
+        imageRef.delete().addOnCompleteListener{
+            if(it.isSuccessful) {
+                result = true
+                CMLog.e(TAG, "success in")
+            } else {
+                CMLog.e(TAG, "fail in \n + ${it.exception}")
+            }
+        }.await()
+        return result
+    }
+
+    suspend fun getList(storageName: String): List<StorageReference> {
+        val imageRef = storageRef.child(storageName)
+        var result: List<StorageReference> = ArrayList()
+        imageRef.listAll().addOnCompleteListener{
+            if(it.isSuccessful) {
+                result = it.result.items
+                CMLog.e(TAG, "success in")
+            } else {
+                CMLog.e(TAG, "fail in \n + ${it.exception}")
+            }
+        }.await()
+        return result
+    }
+
+    suspend fun deleteByRef(imageRef: StorageReference): Boolean {
+        var result = false
+        imageRef.delete().addOnCompleteListener{
+            if(it.isSuccessful) {
+                result = true
+                CMLog.e(TAG, "success in")
+            } else {
+                CMLog.e(TAG, "fail in \n + ${it.exception}")
+            }
+        }.await()
+        return result
+    }
+
+    suspend fun uploadImageFileList(
+        storageName: String,
+        imageList: ArrayList<String>?
+    ): ArrayList<String>? {
+        if(imageList == null) {
+            return null
+        }
+
+        val resultList = ArrayList<String>()
+        val storageRef = FirebaseStorage.getInstance().reference
+        val imageStorageRef = storageRef.child(storageName)
+
+        imageList.forEachIndexed { index, uri ->
+            if(uri.contains(FIRESTORE_DOWNLOAD_URL)) {
+                resultList.add(uri)
+                return@forEachIndexed
+            }
+
+            val metadata = storageMetadata {
+                setCustomMetadata("index", "" + index)
+            }
+
+            val lastIndex: Int = uri.lastIndexOf('/')
+            if (lastIndex < 0) {
+                return@forEachIndexed
+            }
+
+            val fileName: String = uri.substring(lastIndex + 1)
+            val imageRef = imageStorageRef.child(fileName)
+
+            imageRef.putFile(Uri.fromFile(File(uri))).continueWithTask {
+                return@continueWithTask imageRef.downloadUrl
+            }.addOnCompleteListener{
+                if(it.isSuccessful) {
+                    resultList.add(it.result.toString())
+                } else {
+                    CMLog.e(TAG, "fail in \n + ${it.exception}")
+                }
+            }.await()
+        }
+        return resultList
     }
 
     suspend fun uploadImageList(
@@ -68,7 +153,7 @@ class DutchFireStorage {
             val fileName: String = uri.substring(lastIndex + 1)
             val imageRef = imageStorageRef.child(fileName)
 
-            imageRef.putFile(Uri.fromFile(File(uri))).continueWithTask {
+            imageRef.putFile(Uri.parse(uri)).continueWithTask {
                 return@continueWithTask imageRef.downloadUrl
             }.addOnCompleteListener{
                 if(it.isSuccessful) {
