@@ -30,7 +30,7 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
         return remoteDataSource.getDutchOtherFlowList()
     }
 
-    override suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Int) : QuerySnapshot? {
+    override suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Long) : QuerySnapshot? {
         return remoteDataSource.getDutchOtherList(docSnapshot, limitSize)
     }
 

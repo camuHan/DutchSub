@@ -51,7 +51,7 @@ class RemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Int): QuerySnapshot? {
+    override suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Long): QuerySnapshot? {
         val data = if(docSnapshot == null) {
             fireStore.getDataListOrderBy(
                 COLLECTION_NAME_DUTCHS,

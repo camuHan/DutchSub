@@ -71,12 +71,12 @@ class DutchFireStore {
         collectionName: String,
         order: String,
         direction: Query.Direction,
-        limitSize: Int
+        limitSize: Long
     ): QuerySnapshot? {
         var snapshot: QuerySnapshot? = null
         mFireStore.collection(collectionName)
             .orderBy(order, direction)
-            .limit(15).get()
+            .limit(limitSize).get()
             .addOnCompleteListener {
                 if(!it.isSuccessful) {
                     CMLog.e("HSH", "fail in \n + ${it.exception}")
@@ -95,14 +95,14 @@ class DutchFireStore {
         order: String,
         direction: Query.Direction,
         docSnapshot: DocumentSnapshot,
-        limitSize: Int
+        limitSize: Long
     ): QuerySnapshot? {
 //        var list: List<DocumentSnapshot>? = null
         var snapshot: QuerySnapshot? = null
         mFireStore.collection(collectionName)
             .orderBy(order, direction)
             .startAfter(docSnapshot)
-            .limit(15).get()
+            .limit(limitSize).get()
             .addOnCompleteListener {
                 if(!it.isSuccessful) {
                     CMLog.e("HSH", "fail in \n + ${it.exception}")

@@ -13,7 +13,7 @@ interface RemoteDataSource {
     suspend fun updateProfileData(userInfoModel: UserInfoModel): Boolean
 
     fun getDutchOtherFlowList(): Flow<List<DutchInfo>>
-    suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Int): QuerySnapshot?
+    suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Long): QuerySnapshot?
     fun getDutchOther(dutchId: String): Flow<DutchInfo?>
     suspend fun setDutchOther(dutchInfo: DutchInfo): Boolean
     suspend fun deleteDutchOther(dutchId: String): Boolean
