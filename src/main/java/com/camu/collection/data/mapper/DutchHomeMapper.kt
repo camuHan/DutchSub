@@ -196,51 +196,53 @@ fun mapperFireBaseToDutchInfoList(documentList: List<DocumentSnapshot>?): List<D
 }
 
 fun mapperFireBaseToDutchInfo(documentSnapshot: DocumentSnapshot?): DutchInfo {
-    val item = DutchInfo()
+    var item = DutchInfo()
     if(documentSnapshot == null) {
         return item
     }
 
     with(documentSnapshot) {
+        item = toObject(DutchInfo::class.java) as DutchInfo
 //        item.id = data?.get("id") as Long
-        item.userId = data?.get("userId").toString()
-        item.dutchId =  data?.get("dutchId").toString()
-        item.userName = data?.get("userName").toString()
-        item.title = data?.get("title").toString()
-        val dutchMemberList = data?.get("dutchMembers")
-        if(dutchMemberList is ArrayList<*>) {
-            dutchMemberList.forEach {
-                item.dutchMembers.add(it as DutchMemberInfo)
-            }
-        }
-        val subDutchInfoList = data?.get("subDutchInfos")
-        if(subDutchInfoList is ArrayList<*>) {
-            subDutchInfoList.forEach {
-                item.subDutchInfos.add(it as SubDutchInfo)
-            }
-        }
-        item.contents = data?.get("contents").toString()
-        val contentsList = data?.get("contentsList")
-        if(contentsList is ArrayList<*>) {
-            contentsList.forEach {
-                item.contentsList.add(it.toString())
-            }
-        }
-        item.location = data?.get("location").toString()
-        item.partyTime = data?.get("partyTime").toString()
-        item.createdTime = data?.get("createdTime").toString()
-        item.modifiedTime = data?.get("modifiedTime").toString()
-        item.photoUrl = data?.get("photoUrl").toString()
-        val likeList = data?.get("likeList")
-        if(likeList is ArrayList<*>) {
-            likeList.forEach {
-                item.likeList.add(it.toString())
-            }
-        }
-        item.commentCount = data?.get("commentCount") as Int
-        item.viewCount = data?.get("viewCount") as Int
-        item.password = data?.get("password").toString()
-        item.locked = data?.get("locked") as Boolean
+//        item.userId = data?.get("userId").toString()
+//        item.dutchId =  data?.get("dutchId").toString()
+//        item.userName = data?.get("userName").toString()
+//        item.title = data?.get("title").toString()
+//        val dutchMemberList = data?.get("dutchMembers")
+//        if(dutchMemberList is ArrayList<*>) {
+//            dutchMemberList.forEach {
+//                item.dutchMembers.add(it as DutchMemberInfo)
+//            }
+//        }
+//        val subDutchInfoList = data?.get("subDutchInfos")
+//        if(subDutchInfoList is ArrayList<*>) {
+//            subDutchInfoList.forEach {
+//                item.subDutchInfos.add(it as SubDutchInfo)
+//            }
+//        }
+//        item.contents = data?.get("contents").toString()
+//        val contentsList = data?.get("contentsList")
+//        if(contentsList is ArrayList<*>) {
+//            contentsList.forEach {
+//                item.contentsList.add(it.toString())
+//            }
+//        }
+//        item.location = data?.get("location").toString()
+//        item.partyTime = data?.get("partyTime").toString()
+//        item.createdTime = data?.get("createdTime").toString()
+//        item.modifiedTime = data?.get("modifiedTime").toString()
+//        item.photoUrl = data?.get("photoUrl").toString()
+//        item.circleInfo = data?.get("circleInfo") as CircleInfo
+//        val likeList = data?.get("likeList")
+//        if(likeList is ArrayList<*>) {
+//            likeList.forEach {
+//                item.likeList.add(it.toString())
+//            }
+//        }
+//        item.commentCount = data?.get("commentCount") as Int
+//        item.viewCount = data?.get("viewCount") as Int
+//        item.password = data?.get("password").toString()
+//        item.locked = data?.get("locked") as Boolean
     }
     return item
 }
@@ -252,6 +254,15 @@ fun mapperAddFirebaseUser(dutchInfo: DutchInfo, firebaseUser: FirebaseUser?): Du
         dutchInfo.photoUrl = firebaseUser.photoUrl.toString()
     }
     return dutchInfo
+}
+
+fun mapperAddFirebaseUser(circleInfo: CircleInfo, firebaseUser: FirebaseUser?): CircleInfo {
+    if(firebaseUser != null) {
+        circleInfo.leaderId = firebaseUser.uid
+        circleInfo.leaderName = firebaseUser.displayName ?: ""
+        circleInfo.photoUrl = firebaseUser.photoUrl.toString()
+    }
+    return circleInfo
 }
 
 fun mapperAddFirebaseUser(commentInfo: CommentInfo, firebaseUser: FirebaseUser?): CommentInfo {

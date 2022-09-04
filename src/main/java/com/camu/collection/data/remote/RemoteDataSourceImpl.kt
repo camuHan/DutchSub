@@ -1,14 +1,17 @@
 package com.camu.collection.data.remote
 
+import com.camu.collection.data.define.DataDefine.FireBaseStorage.FIREBASE_STORAGE_CIRCLE_IMAGES
 import com.camu.collection.data.define.DataDefine.FireBaseStorage.FIREBASE_STORAGE_COMMENT_IMAGE
 import com.camu.collection.data.define.DataDefine.FireBaseStorage.FIREBASE_STORAGE_DUTCH_IMAGES
 import com.camu.collection.data.define.DataDefine.FireBaseStorage.FIREBASE_STORAGE_PROFILE_IMAGES
+import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_CIRCLES
 import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_COMMENTS
 import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_DUTCHS
 import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_USERS
 import com.camu.collection.data.mapper.mapperAddFirebaseUser
 import com.camu.collection.data.remote.firebase.DutchFireStorage
 import com.camu.collection.data.remote.firebase.DutchFireStore
+import com.camu.collection.domain.model.CircleInfo
 import com.camu.collection.domain.model.CommentInfo
 import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
@@ -69,7 +72,6 @@ class RemoteDataSourceImpl @Inject constructor(
             )
         }
         return data
-//        return data?.toObjects(DutchInfo::class.java) as ArrayList<DutchInfo>
     }
 
     override fun getDutchOther(dutchId: String): Flow<DutchInfo?> {
@@ -117,6 +119,52 @@ class RemoteDataSourceImpl @Inject constructor(
             }
         }
         return result
+    }
+
+    override suspend fun setCircle(circleInfo: CircleInfo): Boolean {
+        circleInfo.createdTime = System.currentTimeMillis().toString()
+        mapperAddFirebaseUser(circleInfo, mAuth.currentUser)
+        circleInfo.circleId = circleInfo.createdTime + circleInfo.leaderId
+
+        if(circleInfo.circleImage.isNotEmpty()) {
+            val dutchStorageCommentName = FIREBASE_STORAGE_CIRCLE_IMAGES +
+                    "/" + circleInfo.circleId
+            circleInfo.circleImage = fireStorage.upload(dutchStorageCommentName, circleInfo.circleImage) ?: ""
+        }
+
+        return fireStore.setData(COLLECTION_NAME_CIRCLES, circleInfo, circleInfo.circleId)
+    }
+
+    override suspend fun deleteCircle(circleId: String): Boolean {
+        var result = false
+        val dutchStorageName = FIREBASE_STORAGE_CIRCLE_IMAGES + "/" + circleId
+        result = fireStore.deleteData(COLLECTION_NAME_CIRCLES, circleId)
+        if(result) {
+            val dutchStorageCommentName = FIREBASE_STORAGE_DUTCH_IMAGES +
+                    "/" + circleId
+            fireStorage.delete(dutchStorageCommentName)
+        }
+        return result
+    }
+
+    override suspend fun getCircleList(docSnapshot: DocumentSnapshot?, limitSize: Long): QuerySnapshot? {
+        val data = if(docSnapshot == null) {
+            fireStore.getDataListOrderBy(
+                COLLECTION_NAME_CIRCLES,
+                "title",
+                Query.Direction.ASCENDING,
+                limitSize
+            )
+        } else {
+            fireStore.getDataMoreListOrderBy(
+                COLLECTION_NAME_CIRCLES,
+                "title",
+                Query.Direction.ASCENDING,
+                docSnapshot,
+                limitSize
+            )
+        }
+        return data
     }
 
     override fun getDutchCommentList(dutchId: String): Flow<List<CommentInfo>> {
@@ -206,6 +254,14 @@ class RemoteDataSourceImpl @Inject constructor(
         }
 
         return result
+    }
+
+    override fun setDutchCircleEvent(dutchId: String, circleInfo: CircleInfo) {
+        fireStore.setDutchCircleEvent(
+            COLLECTION_NAME_DUTCHS,
+            dutchId,
+            circleInfo
+        )
     }
 
     override fun dutchLikeEvent(dutchId: String) {

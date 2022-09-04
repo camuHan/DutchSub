@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
+import com.camu.collection.domain.model.CircleInfo
 import com.camu.collection.domain.model.DutchMemberInfo
 import com.camu.collection.domain.model.SubDutchMemberInfo
 import com.camu.collection.domain.model.SubDutchInfo
@@ -33,6 +34,18 @@ class HomeTypeConverter @Inject constructor(private val gson: Gson) {
             return null
         }
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    }
+
+    @TypeConverter
+    fun toCircleInfo(value: String) : CircleInfo{
+        val type: Type = object : TypeToken<CircleInfo?>() {}.type
+        return gson.fromJson(value, type)
+    }
+
+    @TypeConverter
+    fun fromCircleInfo(circleInfo : CircleInfo) : String?{
+        val type: Type = object : TypeToken<CircleInfo?>() {}.type
+        return gson.toJson(circleInfo, type)
     }
 
     @TypeConverter

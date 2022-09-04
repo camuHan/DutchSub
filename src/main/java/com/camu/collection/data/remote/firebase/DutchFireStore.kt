@@ -1,6 +1,7 @@
 package com.camu.collection.data.remote.firebase
 
 import com.camu.collection.data.utils.CMLog
+import com.camu.collection.domain.model.CircleInfo
 import com.camu.collection.domain.model.CommentInfo
 import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
@@ -328,6 +329,18 @@ class DutchFireStore {
         mFireStore.runTransaction { transaction ->
             val contentDTO = transaction.get(doc).toObject(DutchInfo::class.java) ?: return@runTransaction
             contentDTO.commentCount = contentDTO.commentCount.plus(add)
+
+            transaction.set(doc, contentDTO)
+        }
+    }
+
+    fun setDutchCircleEvent(collectionName: String, documentId: String, circleInfo: CircleInfo) {
+        val uid = mAuth.currentUser?.uid ?: return
+        val doc = mFireStore.collection(collectionName)
+            .document(documentId)
+        mFireStore.runTransaction { transaction ->
+            val contentDTO = transaction.get(doc).toObject(DutchInfo::class.java) ?: return@runTransaction
+            contentDTO.circleInfo = circleInfo
 
             transaction.set(doc, contentDTO)
         }

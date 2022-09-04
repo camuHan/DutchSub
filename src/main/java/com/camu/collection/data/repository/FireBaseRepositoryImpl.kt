@@ -2,6 +2,7 @@ package com.camu.collection.data.repository
 
 import android.net.Uri
 import com.camu.collection.data.remote.RemoteDataSource
+import com.camu.collection.domain.model.CircleInfo
 import com.camu.collection.domain.model.CommentInfo
 import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
@@ -46,6 +47,18 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
         return remoteDataSource.deleteDutchOther(dutchId)
     }
 
+    override suspend fun setCircle(circleInfo: CircleInfo): Boolean {
+        return remoteDataSource.setCircle(circleInfo)
+    }
+
+    override suspend fun deleteCircle(circleId: String): Boolean {
+        return remoteDataSource.deleteCircle(circleId)
+    }
+
+    override suspend fun getCircleList(docSnapshot: DocumentSnapshot?, limitSize: Long): QuerySnapshot? {
+        return remoteDataSource.getCircleList(docSnapshot, limitSize)
+    }
+
     override fun getDutchCommentList(dutchId: String): Flow<List<CommentInfo>> {
         return remoteDataSource.getDutchCommentList(dutchId)
     }
@@ -58,11 +71,15 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
         return remoteDataSource.deleteDutchComment(commentInfo)
     }
 
+    override fun setDutchCircleEvent(dutchId: String, circleInfo: CircleInfo) {
+        remoteDataSource.setDutchCircleEvent(dutchId, circleInfo)
+    }
+
     override fun dutchLikeEvent(dutchId: String) {
-        return remoteDataSource.dutchLikeEvent(dutchId)
+        remoteDataSource.dutchLikeEvent(dutchId)
     }
 
     override fun likeEvent(commentInfo: CommentInfo) {
-        return remoteDataSource.likeEvent(commentInfo)
+        remoteDataSource.likeEvent(commentInfo)
     }
 }

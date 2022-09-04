@@ -2,6 +2,7 @@ package com.camu.collection.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.camu.collection.domain.model.CircleInfo
 import com.camu.collection.domain.model.DutchMemberInfo
 import com.camu.collection.domain.model.SubDutchMemberInfo
 import com.camu.collection.domain.model.SubDutchInfo

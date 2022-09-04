@@ -1,5 +1,6 @@
 package com.camu.collection.data.remote
 
+import com.camu.collection.domain.model.CircleInfo
 import com.camu.collection.domain.model.CommentInfo
 import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
@@ -18,10 +19,15 @@ interface RemoteDataSource {
     suspend fun setDutchOther(dutchInfo: DutchInfo): Boolean
     suspend fun deleteDutchOther(dutchId: String): Boolean
 
+    suspend fun setCircle(circleInfo: CircleInfo): Boolean
+    suspend fun deleteCircle(circleId: String): Boolean
+    suspend fun getCircleList(docSnapshot: DocumentSnapshot?, limitSize: Long): QuerySnapshot?
+
     fun getDutchCommentList(dutchId: String): Flow<List<CommentInfo>>
     suspend fun setDutchComment(commentInfo: CommentInfo): Boolean
     suspend fun deleteDutchComment(commentInfo: CommentInfo): Boolean
 
+    fun setDutchCircleEvent(dutchId: String, circleInfo: CircleInfo)
     fun dutchLikeEvent(dutchId: String)
     fun likeEvent(commentInfo: CommentInfo)
 }
