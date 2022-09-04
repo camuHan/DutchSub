@@ -6,6 +6,8 @@ import com.camu.collection.domain.model.CommentInfo
 import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
 import com.camu.collection.domain.repository.FireBaseRepository
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -24,8 +26,12 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
 
     /* dutch other */
 
-    override fun getDutchOtherList() : Flow<List<DutchInfo>> {
-        return remoteDataSource.getDutchOtherList()
+    override fun getDutchOtherFlowList() : Flow<List<DutchInfo>> {
+        return remoteDataSource.getDutchOtherFlowList()
+    }
+
+    override suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Int) : QuerySnapshot? {
+        return remoteDataSource.getDutchOtherList(docSnapshot, limitSize)
     }
 
     override fun getDutchOther(dutchId: String): Flow<DutchInfo?> {

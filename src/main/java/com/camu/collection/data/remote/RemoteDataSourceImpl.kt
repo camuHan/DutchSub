@@ -13,7 +13,9 @@ import com.camu.collection.domain.model.CommentInfo
 import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
@@ -38,7 +40,7 @@ class RemoteDataSourceImpl @Inject constructor(
         return fireStorage.updateProfile(userInfoModel)
     }
 
-    override fun getDutchOtherList(): Flow<List<DutchInfo>> {
+    override fun getDutchOtherFlowList(): Flow<List<DutchInfo>> {
         val flowData = fireStore.getFlowDataListOrderBy(
             COLLECTION_NAME_DUTCHS,
             "modifiedTime",
@@ -47,6 +49,27 @@ class RemoteDataSourceImpl @Inject constructor(
         return flowData.transform {
             emit(it.toObjects(DutchInfo::class.java))
         }
+    }
+
+    override suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Int): QuerySnapshot? {
+        val data = if(docSnapshot == null) {
+            fireStore.getDataListOrderBy(
+                COLLECTION_NAME_DUTCHS,
+                "modifiedTime",
+                Query.Direction.DESCENDING,
+                limitSize
+            )
+        } else {
+            fireStore.getDataMoreListOrderBy(
+                COLLECTION_NAME_DUTCHS,
+                "modifiedTime",
+                Query.Direction.DESCENDING,
+                docSnapshot,
+                limitSize
+            )
+        }
+        return data
+//        return data?.toObjects(DutchInfo::class.java) as ArrayList<DutchInfo>
     }
 
     override fun getDutchOther(dutchId: String): Flow<DutchInfo?> {

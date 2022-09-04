@@ -67,10 +67,42 @@ class DutchFireStore {
         }
     }
 
-    suspend fun getDataList(collectionName: String): QuerySnapshot? {
+    suspend fun getDataListOrderBy(
+        collectionName: String,
+        order: String,
+        direction: Query.Direction,
+        limitSize: Int
+    ): QuerySnapshot? {
+        var snapshot: QuerySnapshot? = null
+        mFireStore.collection(collectionName)
+            .orderBy(order, direction)
+            .limit(15).get()
+            .addOnCompleteListener {
+                if(!it.isSuccessful) {
+                    CMLog.e("HSH", "fail in \n + ${it.exception}")
+                } else {
+                    CMLog.e("HSH", "success in")
+                    snapshot = it.result
+//                    list = it.result.documents
+                }
+            }.await()
+
+        return snapshot
+    }
+
+    suspend fun getDataMoreListOrderBy(
+        collectionName: String,
+        order: String,
+        direction: Query.Direction,
+        docSnapshot: DocumentSnapshot,
+        limitSize: Int
+    ): QuerySnapshot? {
 //        var list: List<DocumentSnapshot>? = null
         var snapshot: QuerySnapshot? = null
-        mFireStore.collection(collectionName).get()
+        mFireStore.collection(collectionName)
+            .orderBy(order, direction)
+            .startAfter(docSnapshot)
+            .limit(15).get()
             .addOnCompleteListener {
                 if(!it.isSuccessful) {
                     CMLog.e("HSH", "fail in \n + ${it.exception}")

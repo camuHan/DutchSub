@@ -3,6 +3,8 @@ package com.camu.collection.data.remote
 import com.camu.collection.domain.model.CommentInfo
 import com.camu.collection.domain.model.DutchInfo
 import com.camu.collection.domain.model.UserInfoModel
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.flow.Flow
 
 interface RemoteDataSource {
@@ -10,7 +12,8 @@ interface RemoteDataSource {
     suspend fun uploadProfileImage(uri: String?): String?
     suspend fun updateProfileData(userInfoModel: UserInfoModel): Boolean
 
-    fun getDutchOtherList(): Flow<List<DutchInfo>>
+    fun getDutchOtherFlowList(): Flow<List<DutchInfo>>
+    suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Int): QuerySnapshot?
     fun getDutchOther(dutchId: String): Flow<DutchInfo?>
     suspend fun setDutchOther(dutchInfo: DutchInfo): Boolean
     suspend fun deleteDutchOther(dutchId: String): Boolean
