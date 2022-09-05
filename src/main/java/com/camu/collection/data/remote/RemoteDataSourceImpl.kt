@@ -56,17 +56,49 @@ class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Long): QuerySnapshot? {
         val data = if(docSnapshot == null) {
-            fireStore.getDataListOrderBy(
+            fireStore.getDataList(
                 COLLECTION_NAME_DUTCHS,
                 "modifiedTime",
                 Query.Direction.DESCENDING,
+                "",
+                "",
+                null,
                 limitSize
             )
         } else {
-            fireStore.getDataMoreListOrderBy(
+            fireStore.getDataList(
                 COLLECTION_NAME_DUTCHS,
                 "modifiedTime",
                 Query.Direction.DESCENDING,
+                "",
+                "",
+                docSnapshot,
+                limitSize
+            )
+        }
+        return data
+    }
+
+    override suspend fun getDutchOtherListCircle(
+        docSnapshot: DocumentSnapshot?, limitSize: Long, whereValue: String?
+    ): QuerySnapshot? {
+        val data = if(docSnapshot == null) {
+            fireStore.getDataList(
+                COLLECTION_NAME_DUTCHS,
+                "modifiedTime",
+                Query.Direction.DESCENDING,
+                "circleInfo.title",
+                whereValue,
+                null,
+                limitSize
+            )
+        } else {
+            fireStore.getDataList(
+                COLLECTION_NAME_DUTCHS,
+                "modifiedTime",
+                Query.Direction.DESCENDING,
+                "circleInfo.title",
+                whereValue,
                 docSnapshot,
                 limitSize
             )
@@ -149,17 +181,22 @@ class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getCircleList(docSnapshot: DocumentSnapshot?, limitSize: Long): QuerySnapshot? {
         val data = if(docSnapshot == null) {
-            fireStore.getDataListOrderBy(
+            fireStore.getDataList(
                 COLLECTION_NAME_CIRCLES,
                 "title",
                 Query.Direction.ASCENDING,
+                "",
+                "",
+                null,
                 limitSize
             )
         } else {
-            fireStore.getDataMoreListOrderBy(
+            fireStore.getDataList(
                 COLLECTION_NAME_CIRCLES,
                 "title",
                 Query.Direction.ASCENDING,
+                "",
+                "",
                 docSnapshot,
                 limitSize
             )

@@ -68,37 +68,49 @@ class DutchFireStore {
         }
     }
 
-    suspend fun getDataListOrderBy(
+    suspend fun getDataList(
         collectionName: String,
         order: String,
         direction: Query.Direction,
+        whereField: String,
+        whereFieldValue: String?,
+        docSnapshot: DocumentSnapshot?,
         limitSize: Long
     ): QuerySnapshot? {
         var snapshot: QuerySnapshot? = null
-        mFireStore.collection(collectionName)
-            .orderBy(order, direction)
-            .limit(limitSize).get()
-            .addOnCompleteListener {
+        val collection = mFireStore.collection(collectionName)
+        var query = collection.orderBy(order, direction)
+
+        if(whereFieldValue != null && whereFieldValue.isNotEmpty()) {
+            query = query.whereEqualTo(whereField, whereFieldValue)
+        }
+
+        if(docSnapshot != null) {
+            query = query.startAfter(docSnapshot)
+        }
+        if(limitSize > 0) {
+            query = query.limit(limitSize)
+        }
+
+        query.get().addOnCompleteListener {
                 if(!it.isSuccessful) {
                     CMLog.e("HSH", "fail in \n + ${it.exception}")
                 } else {
                     CMLog.e("HSH", "success in")
                     snapshot = it.result
-//                    list = it.result.documents
                 }
             }.await()
 
         return snapshot
     }
 
-    suspend fun getDataMoreListOrderBy(
+    suspend fun getDataMoreList(
         collectionName: String,
         order: String,
         direction: Query.Direction,
         docSnapshot: DocumentSnapshot,
         limitSize: Long
     ): QuerySnapshot? {
-//        var list: List<DocumentSnapshot>? = null
         var snapshot: QuerySnapshot? = null
         mFireStore.collection(collectionName)
             .orderBy(order, direction)
@@ -110,7 +122,6 @@ class DutchFireStore {
                 } else {
                     CMLog.e("HSH", "success in")
                     snapshot = it.result
-//                    list = it.result.documents
                 }
             }.await()
 

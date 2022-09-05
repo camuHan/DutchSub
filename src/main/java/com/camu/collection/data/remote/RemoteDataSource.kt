@@ -15,6 +15,7 @@ interface RemoteDataSource {
 
     fun getDutchOtherFlowList(): Flow<List<DutchInfo>>
     suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Long): QuerySnapshot?
+    suspend fun getDutchOtherListCircle(docSnapshot: DocumentSnapshot?, limitSize: Long, whereValue: String?): QuerySnapshot?
     fun getDutchOther(dutchId: String): Flow<DutchInfo?>
     suspend fun setDutchOther(dutchInfo: DutchInfo): Boolean
     suspend fun deleteDutchOther(dutchId: String): Boolean
