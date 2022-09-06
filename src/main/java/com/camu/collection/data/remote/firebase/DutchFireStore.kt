@@ -345,6 +345,18 @@ class DutchFireStore {
         }
     }
 
+    fun setDutchPasswordEvent(collectionName: String, documentId: String, password: String) {
+        val uid = mAuth.currentUser?.uid ?: return
+        val doc = mFireStore.collection(collectionName)
+            .document(documentId)
+        mFireStore.runTransaction { transaction ->
+            val contentDTO = transaction.get(doc).toObject(DutchInfo::class.java) ?: return@runTransaction
+            contentDTO.password = password
+
+            transaction.set(doc, contentDTO)
+        }
+    }
+
     fun setDutchCircleEvent(collectionName: String, documentId: String, circleInfo: CircleInfo) {
         val uid = mAuth.currentUser?.uid ?: return
         val doc = mFireStore.collection(collectionName)

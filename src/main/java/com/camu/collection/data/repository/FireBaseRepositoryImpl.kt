@@ -75,6 +75,10 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
         return remoteDataSource.deleteDutchComment(commentInfo)
     }
 
+    override fun setDutchPasswordEvent(dutchId: String, password: String) {
+        remoteDataSource.setDutchPasswordEvent(dutchId, password)
+    }
+
     override fun setDutchCircleEvent(dutchId: String, circleInfo: CircleInfo) {
         remoteDataSource.setDutchCircleEvent(dutchId, circleInfo)
     }

@@ -293,6 +293,14 @@ class RemoteDataSourceImpl @Inject constructor(
         return result
     }
 
+    override fun setDutchPasswordEvent(dutchId: String, password: String) {
+        fireStore.setDutchPasswordEvent(
+            COLLECTION_NAME_DUTCHS,
+            dutchId,
+            password
+        )
+    }
+
     override fun setDutchCircleEvent(dutchId: String, circleInfo: CircleInfo) {
         fireStore.setDutchCircleEvent(
             COLLECTION_NAME_DUTCHS,
