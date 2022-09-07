@@ -43,7 +43,7 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
         return remoteDataSource.getDutchOther(dutchId)
     }
 
-    override suspend fun setDutchOther(dutchInfo: DutchInfo): Boolean {
+    override suspend fun setDutchOther(dutchInfo: DutchInfo?): Boolean {
         return remoteDataSource.setDutchOther(dutchInfo)
     }
 
