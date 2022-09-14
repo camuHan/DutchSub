@@ -174,13 +174,13 @@ class DutchFireStorage {
             photoUri = Uri.parse(userInfo.photoUrl)
         }
 
-        user!!.updateProfile(profileUpdates)
-            .addOnCompleteListener { task ->
+        user?.updateProfile(profileUpdates)
+            ?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     CMLog.d(TAG, "User profile updated.")
                     result = true
                 }
-            }.await()
+            }?.await()
         return result
     }
 

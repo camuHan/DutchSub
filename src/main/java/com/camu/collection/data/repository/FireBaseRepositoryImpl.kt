@@ -2,10 +2,7 @@ package com.camu.collection.data.repository
 
 import android.net.Uri
 import com.camu.collection.data.remote.RemoteDataSource
-import com.camu.collection.domain.model.CircleInfo
-import com.camu.collection.domain.model.CommentInfo
-import com.camu.collection.domain.model.DutchInfo
-import com.camu.collection.domain.model.UserInfoModel
+import com.camu.collection.domain.model.*
 import com.camu.collection.domain.repository.FireBaseRepository
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
@@ -17,12 +14,28 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
         return remoteDataSource.addUserIfNotExists()
     }
 
-    override suspend fun updateProfileData(userInfoModel: UserInfoModel): Boolean {
-        return remoteDataSource.updateProfileData(userInfoModel)
+    override suspend fun updateProfile(userInfoModel: UserInfoModel) {
+        remoteDataSource.updateProfile(userInfoModel)
+    }
+
+    override fun getUserInfo(): Flow<UserInfoModel?>? {
+        return remoteDataSource.getUserInfo()
+    }
+
+    override suspend fun getCurrentUserInfo(): UserInfoModel? {
+        return remoteDataSource.getCurrentUserInfo()
+    }
+
+    override suspend fun updateProfileDataInFireStorage(userInfoModel: UserInfoModel): Boolean {
+        return remoteDataSource.updateProfileDataInFireStorage(userInfoModel)
     }
 
     override suspend fun changeProfileImage(uri: Uri): String? {
         return remoteDataSource.uploadProfileImage(uri.toString())
+    }
+
+    override suspend fun report(reportInfo: ReportInfo): Boolean {
+        return remoteDataSource.report(reportInfo)
     }
 
     /* dutch other */

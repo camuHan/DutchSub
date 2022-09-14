@@ -1,9 +1,6 @@
 package com.camu.collection.data.remote
 
-import com.camu.collection.domain.model.CircleInfo
-import com.camu.collection.domain.model.CommentInfo
-import com.camu.collection.domain.model.DutchInfo
-import com.camu.collection.domain.model.UserInfoModel
+import com.camu.collection.domain.model.*
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +8,11 @@ import kotlinx.coroutines.flow.Flow
 interface RemoteDataSource {
     suspend fun addUserIfNotExists(): Boolean
     suspend fun uploadProfileImage(uri: String?): String?
-    suspend fun updateProfileData(userInfoModel: UserInfoModel): Boolean
+    suspend fun updateProfile(userInfoModel: UserInfoModel)
+    fun getUserInfo(): Flow<UserInfoModel?>?
+    suspend fun getCurrentUserInfo(): UserInfoModel?
+    suspend fun updateProfileDataInFireStorage(userInfoModel: UserInfoModel): Boolean
+    suspend fun report(reportInfo: ReportInfo): Boolean
 
     fun getDutchOtherFlowList(): Flow<List<DutchInfo>>
     suspend fun getDutchOtherList(docSnapshot: DocumentSnapshot?, limitSize: Long): QuerySnapshot?

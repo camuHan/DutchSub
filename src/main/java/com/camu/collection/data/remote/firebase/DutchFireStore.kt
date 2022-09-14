@@ -1,10 +1,7 @@
 package com.camu.collection.data.remote.firebase
 
 import com.camu.collection.data.utils.CMLog
-import com.camu.collection.domain.model.CircleInfo
-import com.camu.collection.domain.model.CommentInfo
-import com.camu.collection.domain.model.DutchInfo
-import com.camu.collection.domain.model.UserInfoModel
+import com.camu.collection.domain.model.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
@@ -27,17 +24,19 @@ class DutchFireStore {
             .addOnCompleteListener {
                 if(it.isSuccessful && it.result.exists()) {
                     CMLog.e(TAG, "uid is already exists. : " + user.uid)
+                    result = true
                 } else {
                     CMLog.e(TAG, "there is no uid. need to add data")
-                    addUserToFirestore(user, collectionName)
-                    result = true
                 }
             }.await()
+        if(!result) {
+            result = addUserToFirestore(user, collectionName)
+        }
 
         return result
     }
 
-    private fun addUserToFirestore(firebaseUser: FirebaseUser, collectionName: String) {
+    private suspend fun addUserToFirestore(firebaseUser: FirebaseUser, collectionName: String): Boolean {
         val mUserProfile = UserInfoModel()
 
         mUserProfile.userId = firebaseUser.uid
@@ -47,15 +46,19 @@ class DutchFireStore {
         mUserProfile.photoUrl = photoUrl
         mUserProfile.timestampCreated = FieldValue.serverTimestamp().toString()
 
-        setUserData(collectionName, mUserProfile, firebaseUser.uid)
+        return setData(collectionName, mUserProfile, firebaseUser.uid)
+    }
 
-//        mFireStore.collection(collectionName)
-//            .document(firebaseUser.uid)
-//            .set(mUserProfile)
-//            .addOnSuccessListener {
-//                CMLog.d(TAG, "DocumentSnapshot successfully written!")
-//            }
-//            .addOnFailureListener { e -> CMLog.w(TAG, "Error writing document \n$e") }
+    fun setBlockListEvent(collectionName: String, blockList: ArrayList<BlockUserInfo>, documentId: String) {
+        val doc = mFireStore.collection(collectionName)
+            .document(documentId)
+
+        mFireStore.runTransaction { transaction ->
+            val contentDTO = transaction.get(doc).toObject(UserInfoModel::class.java) ?: return@runTransaction
+            contentDTO.blockUserList = blockList
+
+            transaction.set(doc, contentDTO)
+        }
     }
 
     fun setUserData(collectionName: String, data: Any, documentId: String) {
@@ -66,6 +69,15 @@ class DutchFireStore {
 //            val snapshot = transaction.get(doc)
             transaction.set(doc, data)
         }
+    }
+
+    suspend fun getData(
+        collectionName: String,
+        documentId: String
+    ): DocumentSnapshot? {
+
+        return mFireStore.collection(collectionName)
+            .document(documentId).get().await()
     }
 
     suspend fun getDataList(

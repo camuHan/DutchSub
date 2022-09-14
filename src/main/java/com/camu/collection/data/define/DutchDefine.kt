@@ -10,6 +10,7 @@ object DataDefine {
         const val COLLECTION_NAME_USERS = "users"
         const val COLLECTION_NAME_DUTCHS = "dutchs"
         const val COLLECTION_NAME_COMMENTS = "comments"
+        const val COLLECTION_NAME_REPORTS = "reports"
         /* not used */
         const val COLLECTION_NAME_PROFILE_IMAGES = "profileImages"
     }

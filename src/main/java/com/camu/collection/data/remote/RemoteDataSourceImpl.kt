@@ -7,19 +7,19 @@ import com.camu.collection.data.define.DataDefine.FireBaseStorage.FIREBASE_STORA
 import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_CIRCLES
 import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_COMMENTS
 import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_DUTCHS
+import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_REPORTS
 import com.camu.collection.data.define.DataDefine.FireStoreCollection.COLLECTION_NAME_USERS
 import com.camu.collection.data.mapper.mapperAddFirebaseUser
 import com.camu.collection.data.remote.firebase.DutchFireStorage
 import com.camu.collection.data.remote.firebase.DutchFireStore
-import com.camu.collection.domain.model.CircleInfo
-import com.camu.collection.domain.model.CommentInfo
-import com.camu.collection.domain.model.DutchInfo
-import com.camu.collection.domain.model.UserInfoModel
+import com.camu.collection.data.utils.CMLog
+import com.camu.collection.domain.model.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.transform
 import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(
@@ -38,9 +38,45 @@ class RemoteDataSourceImpl @Inject constructor(
             , uri)
     }
 
-    override suspend fun updateProfileData(userInfoModel: UserInfoModel): Boolean {
-//        val url = uploadProfileImage(userInfoModel.photoUrl)
+    override suspend fun updateProfile(userInfoModel: UserInfoModel) {
+        val userId = mAuth.currentUser?.uid ?: return
+
+        val list = ArrayList<BlockUserInfo>()
+        list.addAll(userInfoModel.blockUserList)
+
+        fireStore.setBlockListEvent(
+            COLLECTION_NAME_USERS,
+            list,
+            userId
+        )
+    }
+
+    override fun getUserInfo(): Flow<UserInfoModel?>? {
+        val userId = mAuth.currentUser?.uid ?: return null
+
+        val flowData = fireStore.getFlowData(
+            COLLECTION_NAME_USERS,
+            userId
+        )
+
+        return flowData.transform {
+            emit(it.toObject(UserInfoModel::class.java))
+        }
+    }
+
+    override suspend fun getCurrentUserInfo(): UserInfoModel? {
+        val userId = mAuth.currentUser?.uid ?: return null
+        val data = fireStore.getData(COLLECTION_NAME_USERS, userId)
+        return data?.toObject(UserInfoModel::class.java)
+    }
+
+    override suspend fun updateProfileDataInFireStorage(userInfoModel: UserInfoModel): Boolean {
         return fireStorage.updateProfile(userInfoModel)
+    }
+
+    override suspend fun report(reportInfo: ReportInfo): Boolean {
+        val docId = reportInfo.reportedTime + reportInfo.userId
+        return fireStore.setData(COLLECTION_NAME_REPORTS, reportInfo, docId)
     }
 
     override fun getDutchOtherFlowList(): Flow<List<DutchInfo>> {

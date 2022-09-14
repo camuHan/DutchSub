@@ -19,6 +19,11 @@ fun mapperToUserInfo(userInfoDbEntity: UserInfoDbEntity?): UserInfoModel? {
         phoneNumber = userInfoDbEntity.phoneNumber,
         photoUrl = userInfoDbEntity.photoUrl,
         timestampCreated = userInfoDbEntity.timestampCreated,
+        blockUserList = if(userInfoDbEntity.blockUserList.isNotEmpty()) {
+            userInfoDbEntity.blockUserList as ArrayList<BlockUserInfo>
+        } else {
+            ArrayList()
+        },
         isUnknown = true
     )
 }
@@ -33,6 +38,7 @@ fun mapperToUserEntity(userInfo: UserInfoModel): UserInfoDbEntity {
         phoneNumber = userInfo.phoneNumber,
         photoUrl = userInfo.photoUrl,
         timestampCreated = userInfo.timestampCreated,
+        blockUserList = userInfo.blockUserList,
         isUnknown = true
     )
 }

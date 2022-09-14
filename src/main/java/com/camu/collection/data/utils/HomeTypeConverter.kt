@@ -4,10 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
-import com.camu.collection.domain.model.CircleInfo
-import com.camu.collection.domain.model.DutchMemberInfo
-import com.camu.collection.domain.model.SubDutchMemberInfo
-import com.camu.collection.domain.model.SubDutchInfo
+import com.camu.collection.domain.model.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.ByteArrayOutputStream
@@ -53,6 +50,18 @@ class HomeTypeConverter @Inject constructor(private val gson: Gson) {
 
     @TypeConverter
     fun toStringList(value: String) = Gson().fromJson(value, Array<String>::class.java).toList()
+
+    @TypeConverter
+    fun blockUserIdListToJson(values: List<BlockUserInfo>): String? {
+        val type: Type = object : TypeToken<List<BlockUserInfo?>?>() {}.type
+        return gson.toJson(values, type)
+    }
+
+    @TypeConverter
+    fun jsonToblockUserIdList(value: String): List<BlockUserInfo> {
+        val type: Type = object : TypeToken<List<BlockUserInfo?>?>() {}.type
+        return gson.fromJson(value, type)
+    }
 
     @TypeConverter
     fun dutchSubMembersToJson(values: List<SubDutchMemberInfo>): String? {
