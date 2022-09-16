@@ -28,7 +28,7 @@ class DutchFireStorage {
         var result: String? = null
         val imageRef = storageRef.child(storageName)
 
-        imageRef.putFile(Uri.parse(uri)).continueWithTask { task: Task<UploadTask.TaskSnapshot> ->
+        imageRef.putFile(Uri.fromFile(File(uri))).continueWithTask { task: Task<UploadTask.TaskSnapshot> ->
             return@continueWithTask imageRef.downloadUrl
         }.addOnCompleteListener{
             if(it.isSuccessful) {
