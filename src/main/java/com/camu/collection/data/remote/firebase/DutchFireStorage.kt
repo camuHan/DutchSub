@@ -1,5 +1,6 @@
 package com.camu.collection.data.remote.firebase
 
+import android.graphics.Bitmap
 import android.net.Uri
 import com.camu.collection.data.utils.CMLog
 import com.camu.collection.domain.model.UserInfoModel
@@ -28,6 +29,22 @@ class DutchFireStorage {
         val imageRef = storageRef.child(storageName)
 
         imageRef.putFile(Uri.parse(uri)).continueWithTask { task: Task<UploadTask.TaskSnapshot> ->
+            return@continueWithTask imageRef.downloadUrl
+        }.addOnCompleteListener{
+            if(it.isSuccessful) {
+                result= it.result.toString()
+            } else {
+                CMLog.e(TAG, "fail in \n + ${it.exception}")
+            }
+        }.await()
+        return result
+    }
+
+    suspend fun upload(storageName: String, image: ByteArray): String? {
+        var result: String? = null
+        val imageRef = storageRef.child(storageName)
+
+        imageRef.putBytes(image).continueWithTask { task: Task<UploadTask.TaskSnapshot> ->
             return@continueWithTask imageRef.downloadUrl
         }.addOnCompleteListener{
             if(it.isSuccessful) {
