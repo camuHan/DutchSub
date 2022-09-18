@@ -141,6 +141,30 @@ fun mapperToSubDutchMemberInfoList(dutchMemberInfoList: List<DutchMemberInfo>, r
     return subDutchMemberList
 }
 
+fun mapperSubDutchMembersToDutchMembers(
+    dutchMembers: ArrayList<DutchMemberInfo>, subDutchInfoList: ArrayList<SubDutchInfo>
+): ArrayList<DutchMemberInfo> {
+    subDutchInfoList.forEachIndexed { index, subDutchInfo ->
+        subDutchInfo.subDutchMembers.forEach { subDutchMemberInfo ->
+            var isNotFind = true
+            subDutchMemberInfo.roundOrder = index+1
+            dutchMembers.forEach { dutchMemberInfo ->
+                if(dutchMemberInfo.memberName == subDutchMemberInfo.memberName) {
+                    dutchMemberInfo.subDutchMemberInfo.add(subDutchMemberInfo)
+                    isNotFind = false
+                }
+            }
+            if(isNotFind) {
+                val dutchMemberInfo = DutchMemberInfo()
+                dutchMemberInfo.memberName = subDutchMemberInfo.memberName
+                dutchMemberInfo.subDutchMemberInfo.add(subDutchMemberInfo)
+                dutchMembers.add(dutchMemberInfo)
+            }
+        }
+    }
+    return dutchMembers
+}
+
 fun mapperAddSubDutchMemberList(
     dutchMembers: ArrayList<DutchMemberInfo>, subDutchMembers: ArrayList<SubDutchMemberInfo>
 ): ArrayList<DutchMemberInfo> {
