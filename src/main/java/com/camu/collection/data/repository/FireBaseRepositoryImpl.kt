@@ -30,8 +30,8 @@ class FireBaseRepositoryImpl @Inject constructor(private val remoteDataSource: R
         return remoteDataSource.updateProfileDataInFireStorage(userInfoModel)
     }
 
-    override suspend fun changeProfileImage(uri: Uri): String? {
-        return remoteDataSource.uploadProfileImage(uri.toString())
+    override suspend fun changeProfileImage(image: String): String? {
+        return remoteDataSource.uploadProfileImage(image)
     }
 
     override suspend fun report(reportInfo: ReportInfo): Boolean {
