@@ -21,19 +21,11 @@ class DutchFireStorage {
             return null
         }
 
-        var result: String? = null
         val imageRef = storageRef.child(storageName)
-
-        imageRef.putFile(Uri.fromFile(File(uri))).continueWithTask {
+        val result = imageRef.putFile(Uri.fromFile(File(uri))).continueWithTask {
             return@continueWithTask imageRef.downloadUrl
-        }.addOnCompleteListener{
-            if(it.isSuccessful) {
-                result= it.result.toString()
-            } else {
-                CMLog.e(TAG, "fail in \n + ${it.exception}")
-            }
         }.await()
-        return result
+        return result.toString()
     }
 
     suspend fun upload(storageName: String, image: ByteArray): String? {
@@ -42,12 +34,6 @@ class DutchFireStorage {
 
         imageRef.putBytes(image).continueWithTask { task: Task<UploadTask.TaskSnapshot> ->
             return@continueWithTask imageRef.downloadUrl
-        }.addOnCompleteListener{
-            if(it.isSuccessful) {
-                result= it.result.toString()
-            } else {
-                CMLog.e(TAG, "fail in \n + ${it.exception}")
-            }
         }.await()
         return result
     }
