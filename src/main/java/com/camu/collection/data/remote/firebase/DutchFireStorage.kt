@@ -1,34 +1,30 @@
 package com.camu.collection.data.remote.firebase
 
-import android.graphics.Bitmap
 import android.net.Uri
 import com.camu.collection.data.utils.CMLog
 import com.camu.collection.domain.model.UserInfoModel
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
-import com.google.firebase.storage.ktx.storageMetadata
 import kotlinx.coroutines.tasks.await
 import java.io.File
 
 class DutchFireStorage {
-    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val storageRef = FirebaseStorage.getInstance().reference
 
     suspend fun upload(storageName: String, uri: String?): String? {
-        if (uri == "") {
+        if (uri == null || uri == "") {
             return null
         }
 
         var result: String? = null
         val imageRef = storageRef.child(storageName)
 
-        imageRef.putFile(Uri.fromFile(File(uri))).continueWithTask { task: Task<UploadTask.TaskSnapshot> ->
+        imageRef.putFile(Uri.fromFile(File(uri))).continueWithTask {
             return@continueWithTask imageRef.downloadUrl
         }.addOnCompleteListener{
             if(it.isSuccessful) {
@@ -109,19 +105,15 @@ class DutchFireStorage {
         val storageRef = FirebaseStorage.getInstance().reference
         val imageStorageRef = storageRef.child(storageName)
 
-        imageList.forEachIndexed { index, uri ->
+        for(uri in imageList) {
             if(uri.contains(FIRESTORE_DOWNLOAD_URL)) {
                 resultList.add(uri)
-                return@forEachIndexed
-            }
-
-            val metadata = storageMetadata {
-                setCustomMetadata("index", "" + index)
+                continue
             }
 
             val lastIndex: Int = uri.lastIndexOf('/')
             if (lastIndex < 0) {
-                return@forEachIndexed
+                continue
             }
 
             val fileName: String = uri.substring(lastIndex + 1)
@@ -152,19 +144,15 @@ class DutchFireStorage {
         val storageRef = FirebaseStorage.getInstance().reference
         val imageStorageRef = storageRef.child(storageName)
 
-        imageList.forEachIndexed { index, uri ->
+        for(uri in imageList) {
             if(uri.contains(FIRESTORE_DOWNLOAD_URL)) {
                 resultList.add(uri)
-                return@forEachIndexed
-            }
-
-            val metadata = storageMetadata {
-                setCustomMetadata("index", "" + index)
+                continue
             }
 
             val lastIndex: Int = uri.lastIndexOf('/')
             if (lastIndex < 0) {
-                return@forEachIndexed
+                continue
             }
 
             val fileName: String = uri.substring(lastIndex + 1)
